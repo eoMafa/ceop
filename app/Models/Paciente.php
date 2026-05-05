@@ -1,0 +1,42 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class Paciente extends Model
+{
+    use HasFactory, SoftDeletes;
+
+    protected $fillable = [
+        'nome',
+        'cpf',
+        'rg',
+        'data_nascimento',
+        'sexo',
+        'telefone',
+        'email',
+        'cep',
+        'logradouro',
+        'numero',
+        'complemento',
+        'bairro',
+        'cidade',
+        'estado',
+        'observacoes',
+        'ativo'
+    ];
+
+    protected function casts(): array {
+        return [
+            'data_nascimento' => 'date',
+            'ativo' => 'boolean',
+        ];
+    }
+
+    public function getIdadeAttribute(): int{
+        return $this->data_nascimento->age;
+    }
+}
