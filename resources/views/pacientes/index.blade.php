@@ -42,12 +42,9 @@
             <h3 class="card-title">
                 {{ isset($termo) ? "Resultados para: \"{$termo}\"" : 'Todos os Pacientes' }}
             </h3>
-            <div class="card-options">
-                <span class="badge bg-secondary">{{ $pacientes->total() }} encontrados</span>
-            </div>
+            <span class="ms-auto text-secondary">{{ $pacientes->total() }} registros</span>
         </div>
-        <div class="table-responsive">
-            <table class="table table-vcenter card-table table-hover">
+        <table class="table table-vcenter table-hover">
                 <thead>
                     <tr>
                         <th>Nome</th>
@@ -86,7 +83,7 @@
                                             <div class="dropdown-divider"></div>
                                             <form action="{{ route('pacientes.destroy', $paciente->id) }}"
                                                 method="POST"
-                                                onsubmit="return confirm('Deseja inativar este paciente?')">
+                                                data-confirm="Deseja inativar o paciente {{ $paciente->nome }}?">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="dropdown-item text-danger">

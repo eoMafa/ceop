@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Paciente;
+use App\Rules\CpfValido;
 use Illuminate\Http\Request;
 
 class PacienteController extends Controller
@@ -32,7 +33,7 @@ class PacienteController extends Controller
     {
         $validated = $request->validate([
             'nome'            => 'required|string|max:255',
-            'cpf'             => 'nullable|string|max:14|unique:pacientes',
+            'cpf' => ['nullable', 'string', 'max:14', 'unique:pacientes', new CpfValido],
             'rg'              => 'nullable|string|max:20',
             'data_nascimento' => 'nullable|date',
             'sexo'            => 'nullable|in:M,F,outro',
@@ -77,7 +78,7 @@ class PacienteController extends Controller
     {
         $validated = $request->validate([
             'nome'            => 'required|string|max:255',
-            'cpf'             => 'nullable|string|max:14|unique:pacientes,cpf,' . $paciente->id,
+            'cpf' => ['nullable', 'string', 'max:14', 'unique:pacientes,cpf,' . $paciente->id, new CpfValido],
             'rg'              => 'nullable|string|max:20',
             'data_nascimento' => 'nullable|date',
             'sexo'            => 'nullable|in:M,F,outro',

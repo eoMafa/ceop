@@ -19,6 +19,8 @@
     },
     "dependencies": {
         "@tabler/core": "^1.4.0",
-        "axios": "^1.16.0"
+        "axios": "^1.16.0",
+        "cleave.js": "^1.6.0",
+        "sweetalert2": "^11.26.24"
     }
 }

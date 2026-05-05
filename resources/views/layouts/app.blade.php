@@ -96,7 +96,7 @@
 
             {{-- Header --}}
             <div class="page-header d-print-none">
-                <div class="container-xl">
+                <div class="container-fluid">
                     <div class="row g-2 align-items-center">
                         <div class="col">
                             <h2 class="page-title">@yield('title', 'Dashboard')</h2>
@@ -121,31 +121,13 @@
             </div>
 
             {{-- Alertas --}}
-            <div class="container-xl mt-3">
-                @if(session('success'))
-                    <div class="alert alert-success alert-dismissible" role="alert">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24"
-                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <circle cx="12" cy="12" r="9" />
-                            <path d="M9 12l2 2l4 -4" />
-                        </svg>
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                @endif
-
-                @if(session('error'))
-                    <div class="alert alert-danger alert-dismissible" role="alert">
-                        {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                @endif
+            <div class="container-fluid mt-3">
+                
             </div>
 
             {{-- Conteúdo da página --}}
             <div class="page-body">
-                <div class="container-xl">
+                <div class="container-fluid">
                     @yield('content')
                 </div>
             </div>
@@ -165,6 +147,10 @@
 
         </div>
     </div>
+    <script>
+        window.sessionSuccess = @json(session('success'));
+        window.sessionError = @json(session('error'));
+    </script>
     @stack('scripts')
 </body>
 
