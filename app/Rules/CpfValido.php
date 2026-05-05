@@ -16,25 +16,35 @@ class CpfValido implements ValidationRule
             return;
         }
 
-        // Rejeita CPFs com todos os dígitos iguais
         if (preg_match('/(\d)\1{10}/', $cpf)) {
             $fail('O CPF informado é inválido.');
             return;
         }
 
-        // Valida dígitos verificadores
-        for ($t = 9; $t < 11; $t++) {
-            $sum = 0;
-            for ($i = 0; $i < $t; $i++) {
-                $sum += $cpf[$i] * (($t + 1) - $i);
-            }
-            $remainder = (10 * $sum) % 11;
-            $digit = $remainder < 2 ? 0 : 11 - $remainder;
+        // Primeiro dígito verificador
+        $sum = 0;
+        for ($i = 0; $i < 9; $i++) {
+            $sum += (int) $cpf[$i] * (10 - $i);
+        }
+        $remainder = $sum % 11;
+        $digit1 = $remainder < 2 ? 0 : 11 - $remainder;
 
-            if ($cpf[$t] != $digit) {
-                $fail('O CPF informado é inválido.');
-                return;
-            }
+        if ((int) $cpf[9] !== $digit1) {
+            $fail('O CPF informado é inválido.');
+            return;
+        }
+
+        // Segundo dígito verificador
+        $sum = 0;
+        for ($i = 0; $i < 10; $i++) {
+            $sum += (int) $cpf[$i] * (11 - $i);
+        }
+        $remainder = $sum % 11;
+        $digit2 = $remainder < 2 ? 0 : 11 - $remainder;
+
+        if ((int) $cpf[10] !== $digit2) {
+            $fail('O CPF informado é inválido.');
+            return;
         }
     }
 }
