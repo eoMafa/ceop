@@ -21,6 +21,8 @@ window.listPlugin = listPlugin;
 
 window.Swal = Swal;
 
+import './alerts.js';
+
 window.Alpine = Alpine;
 Alpine.start();
 
