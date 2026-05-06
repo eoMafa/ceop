@@ -3,6 +3,7 @@
 use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\ProcedimentoController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -42,6 +43,11 @@ Route::middleware('auth')->group(function () {
     Route::get('procedimentos/{id}', [ProcedimentoController::class, 'show'])->name('procedimentos.show');
     Route::get('procedimentos/{id}/edit', [ProcedimentoController::class, 'edit'])->name('procedimentos.edit');
     
+
+    Route::get('usuarios/search', [UsuarioController::class, 'search'])->name('usuarios.search');
+    Route::patch('usuarios/{id}/restore', [UsuarioController::class, 'restore'])->name('usuarios.restore');
+    Route::patch('usuarios/{usuario}/password', [UsuarioController::class, 'updatePassword'])->name('usuarios.password');
+    Route::resource('usuarios', UsuarioController::class);
 });
 
 require __DIR__.'/auth.php';
