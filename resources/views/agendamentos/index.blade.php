@@ -49,6 +49,11 @@
     </div>
 
     {{-- Calendário --}}
+    <style>
+        .fc-event {
+            cursor: pointer;
+        }
+    </style>
     <div class="card">
         <div class="card-body">
             <div id="calendario"></div>
