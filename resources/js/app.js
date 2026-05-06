@@ -9,6 +9,8 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
+import * as bootstrap from '@tabler/core';
+window.bootstrap = bootstrap;
 
 window.Calendar = Calendar;
 window.dayGridPlugin = dayGridPlugin;

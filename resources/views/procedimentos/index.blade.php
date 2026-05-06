@@ -1,113 +1,176 @@
 @extends('layouts.app')
 
-@section('title', 'Procedimentos')
+@section('title', 'Agendamentos')
 
 @section('breadcrumb')
-    <li class="breadcrumb-item active">Procedimentos</li>
+    <li class="breadcrumb-item active">Agendamentos</li>
 @endsection
 
 @section('actions')
-    <a href="{{ route('procedimentos.create') }}" class="btn btn-primary">
+    <a href="{{ route('agendamentos.create') }}" class="btn btn-primary">
         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
             stroke-width="2" stroke="currentColor" fill="none">
             <path stroke="none" d="M0 0h24v24H0z" fill="none" />
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
         </svg>
-        Novo Procedimento
+        Novo Agendamento
     </a>
 @endsection
 
 @section('content')
-    {{-- Busca --}}
+    {{-- Filtro por dentista --}}
     <div class="card mb-3">
         <div class="card-body">
-            <form action="{{ route('procedimentos.search') }}" method="GET">
-                <div class="input-group">
-                    <input type="text" name="q" class="form-control"
-                        placeholder="Buscar por nome ou descrição..."
-                        value="{{ $termo ?? '' }}">
-                    <button type="submit" class="btn btn-primary">Buscar</button>
-                    @if(isset($termo))
-                        <a href="{{ route('procedimentos.index') }}" class="btn btn-secondary">Limpar</a>
-                    @endif
+            <div class="row g-2 align-items-center">
+                <div class="col-auto">
+                    <label class="form-label mb-0">Filtrar por dentista:</label>
                 </div>
-            </form>
+                <div class="col-md-3">
+                    <select id="filtro-dentista" class="form-select">
+                        <option value="">Todos</option>
+                        @foreach($dentistas as $dentista)
+                            <option value="{{ $dentista->id }}">{{ $dentista->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-auto ms-auto">
+                    {{-- Legenda --}}
+                    <div class="d-flex gap-2 flex-wrap">
+                        <span class="badge text-white" style="background:#4299e1">Agendado</span>
+                        <span class="badge text-white" style="background:#48bb78">Confirmado</span>
+                        <span class="badge text-white" style="background:#f56565">Cancelado</span>
+                        <span class="badge text-white" style="background:#667eea">Concluído</span>
+                        <span class="badge text-white" style="background:#ed8936">Falta</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    {{-- Tabela --}}
+    {{-- Calendário --}}
     <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">
-                {{ isset($termo) ? "Resultados para: \"{$termo}\"" : 'Todos os Procedimentos' }}
-            </h3>
-            <span class="ms-auto text-secondary">{{ $procedimentos->total() }} registros</span>
+        <div class="card-body">
+            <div id="calendario"></div>
         </div>
-        <table class="table table-vcenter table-hover">
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Duração</th>
-                    <th>Valor Padrão</th>
-                    <th>Situação</th>
-                    <th class="w-1"></th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($procedimentos as $procedimento)
-                    <tr class="{{ $procedimento->trashed() ? 'table-danger' : '' }}">
-                        <td>{{ $procedimento->nome }}</td>
-                        <td class="text-secondary">{{ $procedimento->duracao_formatada }}</td>
-                        <td class="text-secondary">
-                            R$ {{ number_format($procedimento->valor_padrao, 2, ',', '.') }}
-                        </td>
-                        <td>
-                            @if($procedimento->trashed())
-                                <span class="badge bg-danger text-white">Inativo</span>
-                            @else
-                                <span class="badge bg-success text-white">Ativo</span>
-                            @endif
-                        </td>
-                        <td>
-                            <div class="dropdown">
-                                <button class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                                    Ações
-                                </button>
-                                <div class="dropdown-menu dropdown-menu-end">
-                                    <a href="{{ route('procedimentos.show', $procedimento->id) }}"
-                                        class="dropdown-item">Ver</a>
-                                    <a href="{{ route('procedimentos.edit', $procedimento->id) }}"
-                                        class="dropdown-item">Editar</a>
-                                    @if(!$procedimento->trashed())
-                                        <div class="dropdown-divider"></div>
-                                        <form action="{{ route('procedimentos.destroy', $procedimento->id) }}"
-                                            method="POST"
-                                            data-confirm="Deseja inativar o procedimento {{ $procedimento->nome }}?">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="dropdown-item text-danger">
-                                                Inativar
-                                            </button>
-                                        </form>
-                                    @endif
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" class="text-center text-secondary py-4">
-                            Nenhum procedimento encontrado.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-        @if($procedimentos->hasPages())
-            <div class="card-footer d-flex align-items-center">
-                {{ $procedimentos->links() }}
+    </div>
+
+    {{-- Modal de detalhes --}}
+    <div class="modal modal-blur fade" id="modal-agendamento" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalhes do Agendamento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Paciente</dt>
+                        <dd class="col-sm-8" id="modal-paciente"></dd>
+
+                        <dt class="col-sm-4">Dentista</dt>
+                        <dd class="col-sm-8" id="modal-dentista"></dd>
+
+                        <dt class="col-sm-4">Procedimento</dt>
+                        <dd class="col-sm-8" id="modal-procedimento"></dd>
+
+                        <dt class="col-sm-4">Status</dt>
+                        <dd class="col-sm-8" id="modal-status"></dd>
+
+                        <dt class="col-sm-4">Observações</dt>
+                        <dd class="col-sm-8" id="modal-observacoes"></dd>
+                    </dl>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" id="modal-btn-ver" class="btn btn-secondary">Ver</a>
+                    <a href="#" id="modal-btn-editar" class="btn btn-primary">Editar</a>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
             </div>
-        @endif
+        </div>
     </div>
 @endsection
+
+@push('styles')
+<style>
+    .fc-timegrid-body {
+        height: auto !important;
+    }
+    .fc-scroller {
+        height: auto !important;
+        overflow: visible !important;
+    }
+    .fc-scroller-harness {
+        height: auto !important;
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const calendarEl = document.getElementById('calendario');
+    const filtroDentista = document.getElementById('filtro-dentista');
+
+    const calendar = new Calendar(calendarEl, {
+        plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin],
+        locale: 'pt-br',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+        },
+        buttonText: {
+            today: 'Hoje',
+            month: 'Mês',
+            week: 'Semana',
+            day: 'Dia',
+            list: 'Lista',
+        },
+        initialView: 'timeGridWeek',
+        slotMinTime: {hours: 7},
+        slotMaxTime: {hours: 23},
+        allDaySlot: false,
+        nowIndicator: true,
+        height: 'auto',
+        scrollTime: '08:00:00',
+        events: function (info, successCallback, failureCallback) {
+            fetch(`{{ route('agendamentos.eventos') }}?start=${info.startStr}&end=${info.endStr}&dentista_id=${filtroDentista.value}`)
+                .then(r => r.json())
+                .then(data => successCallback(data))
+                .catch(() => failureCallback());
+        },
+        // Clique em evento — abre modal
+        eventClick: function (info) {
+            info.jsEvent.preventDefault();
+            const props = info.event.extendedProps;
+            const id = info.event.id;
+
+            document.getElementById('modal-paciente').textContent = props.paciente;
+            document.getElementById('modal-dentista').textContent = props.dentista;
+            document.getElementById('modal-procedimento').textContent = props.procedimento;
+            document.getElementById('modal-status').textContent = props.status;
+            document.getElementById('modal-observacoes').textContent = props.observacoes || '—';
+            document.getElementById('modal-btn-editar').href = `/agendamentos/${id}/edit`;
+            document.getElementById('modal-btn-ver').href = `/agendamentos/${id}`;
+
+            // Usa o modal do Tabler diretamente pelo atributo
+            const modalEl = document.getElementById('modal-agendamento');
+            const modal = bootstrap.Modal.getOrCreate(modalEl);
+            modal.show();
+        },
+        // Clique em data vazia — abre criar agendamento
+        dateClick: function (info) {
+            window.location.href = `{{ route('agendamentos.create') }}?data_hora=${info.dateStr}`;
+        },
+    });
+
+    calendar.render();
+
+    // Refetch ao mudar filtro
+    filtroDentista.addEventListener('change', function () {
+        calendar.refetchEvents();
+    });
+});
+</script>
+@endpush
