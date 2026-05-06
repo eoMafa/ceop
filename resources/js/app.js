@@ -4,6 +4,17 @@ import './alerts.js';
 import Alpine from 'alpinejs';
 import Cleave from 'cleave.js';
 import Swal from 'sweetalert2';
+import { Calendar } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import listPlugin from '@fullcalendar/list';
+
+window.Calendar = Calendar;
+window.dayGridPlugin = dayGridPlugin;
+window.timeGridPlugin = timeGridPlugin;
+window.interactionPlugin = interactionPlugin;
+window.listPlugin = listPlugin;
 
 window.Swal = Swal;
 

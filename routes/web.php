@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AgendamentoController;
 use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\ProcedimentoController;
 use App\Http\Controllers\ProfileController;
@@ -48,6 +49,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('usuarios/{id}/restore', [UsuarioController::class, 'restore'])->name('usuarios.restore');
     Route::patch('usuarios/{usuario}/password', [UsuarioController::class, 'updatePassword'])->name('usuarios.password');
     Route::resource('usuarios', UsuarioController::class);
+
+
+    Route::get('agendamentos/eventos', [AgendamentoController::class, 'eventos'])->name('agendamentos.eventos');
+    Route::resource('agendamentos', AgendamentoController::class);
 });
 
 require __DIR__.'/auth.php';

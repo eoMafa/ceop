@@ -18,6 +18,11 @@
         "vite": "^8.0.0"
     },
     "dependencies": {
+        "@fullcalendar/core": "^6.1.20",
+        "@fullcalendar/daygrid": "^6.1.20",
+        "@fullcalendar/interaction": "^6.1.20",
+        "@fullcalendar/list": "^6.1.20",
+        "@fullcalendar/timegrid": "^6.1.20",
         "@tabler/core": "^1.4.0",
         "axios": "^1.16.0",
         "cleave.js": "^1.6.0",

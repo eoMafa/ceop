@@ -93,6 +93,23 @@
                             </a>
                         </li>
 
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('agendamentos.*') ? 'active' : '' }}"
+                                href="{{ route('agendamentos.index') }}">
+                                <span class="nav-link-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <rect x="4" y="5" width="16" height="16" rx="2" />
+                                        <line x1="16" y1="3" x2="16" y2="7" />
+                                        <line x1="8" y1="3" x2="8" y2="7" />
+                                        <line x1="4" y1="11" x2="20" y2="11" />
+                                    </svg>
+                                </span>
+                                <span class="nav-link-title">Agendamentos</span>
+                            </a>
+                        </li>
+
                     </ul>
 
                     <div class="mt-auto pb-3">
