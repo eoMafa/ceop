@@ -1,29 +1,90 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Profile') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
+@section('title', 'Meu Perfil')
+
+@section('breadcrumb')
+    <li class="breadcrumb-item active">Perfil</li>
+@endsection
+
+@section('content')
+    <div class="row g-3">
+
+        {{-- Atualizar informações --}}
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Informações do Perfil</h3>
                 </div>
-            </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ route('profile.update') }}">
+                        @csrf
+                        @method('patch')
 
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
-                </div>
-            </div>
+                        <div class="mb-3">
+                            <label class="form-label required">Nome</label>
+                            <input type="text" name="name"
+                                class="form-control @error('name') is-invalid @enderror"
+                                value="{{ old('name', $user->name) }}" autofocus>
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
+                        <div class="mb-3">
+                            <label class="form-label required">E-mail</label>
+                            <input type="email" name="email"
+                                class="form-control @error('email') is-invalid @enderror"
+                                value="{{ old('email', $user->email) }}">
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </form>
                 </div>
             </div>
         </div>
+
+        {{-- Alterar senha --}}
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Alterar Senha</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ route('password.update') }}">
+                        @csrf
+                        @method('put')
+
+                        <div class="mb-3">
+                            <label class="form-label required">Senha Atual</label>
+                            <input type="password" name="current_password"
+                                class="form-control @error('current_password', 'updatePassword') is-invalid @enderror">
+                            @error('current_password', 'updatePassword')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label required">Nova Senha</label>
+                            <input type="password" name="password"
+                                class="form-control @error('password', 'updatePassword') is-invalid @enderror">
+                            @error('password', 'updatePassword')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label required">Confirmar Nova Senha</label>
+                            <input type="password" name="password_confirmation" class="form-control">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Alterar Senha</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
     </div>
-</x-app-layout>
+@endsection

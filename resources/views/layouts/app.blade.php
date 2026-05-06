@@ -8,11 +8,11 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="antialiased">
+<body class="antialiased layout-fluid">
     <div class="wrapper">
 
         {{-- Sidebar --}}
-        <aside class="navbar navbar-vertical navbar-expand-lg" data-bs-theme="dark">
+        <aside class="navbar navbar-vertical navbar-expand-lg navbar-dark" data-bs-theme="dark">
             <div class="container-fluid">
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -26,7 +26,7 @@
                     </a>
                 </h1>
 
-                <div class="collapse navbar-collapse" id="sidebar-menu">
+                <div class="collapse navbar-collapse show" id="sidebar-menu">
                     <ul class="navbar-nav pt-lg-3">
 
                         <li class="nav-item">
@@ -57,6 +57,23 @@
                                     </svg>
                                 </span>
                                 <span class="nav-link-title">Pacientes</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('procedimentos.*') ? 'active' : '' }}"
+                                href="{{ route('procedimentos.index') }}">
+                                <span class="nav-link-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <path d="M9 12h6" />
+                                        <path d="M11 8h2" />
+                                        <path d="M9 16h6" />
+                                        <rect x="4" y="4" width="16" height="16" rx="2" />
+                                    </svg>
+                                </span>
+                                <span class="nav-link-title">Procedimentos</span>
                             </a>
                         </li>
 
