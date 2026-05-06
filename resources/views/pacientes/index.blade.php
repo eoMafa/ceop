@@ -64,9 +64,9 @@
                             <td class="text-secondary">{{ $paciente->email ?? '—' }}</td>
                             <td>
                                 @if($paciente->trashed())
-                                    <span class="badge bg-danger">Inativo</span>
+                                    <span class="badge bg-danger text-white">Inativo</span>
                                 @else
-                                    <span class="badge bg-success">Ativo</span>
+                                    <span class="badge bg-success text-white">Ativo</span>
                                 @endif
                             </td>
                             <td>

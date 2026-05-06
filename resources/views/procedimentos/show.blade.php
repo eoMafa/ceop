@@ -40,9 +40,9 @@
                 <dt class="col-sm-3">Situação</dt>
                 <dd class="col-sm-9">
                     @if($procedimento->trashed())
-                        <span class="badge bg-danger">Inativo</span>
+                        <span class="badge bg-danger text-white">Inativo</span>
                     @else
-                        <span class="badge bg-success">Ativo</span>
+                        <span class="badge bg-success text-white">Ativo</span>
                     @endif
                 </dd>
             </dl>
