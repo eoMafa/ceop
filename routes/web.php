@@ -4,6 +4,7 @@ use App\Http\Controllers\AgendamentoController;
 use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\ProcedimentoController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProntuarioController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +28,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('pacientes/search', [PacienteController::class, 'search'])->name('pacientes.search');
     Route::patch('pacientes/{id}/restore', [PacienteController::class, 'restore'])->name('pacientes.restore');
+    Route::resource('pacientes', PacienteController::class)->except(['show', 'edit']);
     Route::get('pacientes/{id}', function (int $id) {
         $paciente = \App\Models\Paciente::withTrashed()->findOrFail($id);
         return view('pacientes.show', compact('paciente'));
@@ -35,8 +37,7 @@ Route::middleware('auth')->group(function () {
         $paciente = \App\Models\Paciente::withTrashed()->findOrFail($id);
         return view('pacientes.edit', compact('paciente'));
     })->name('pacientes.edit');
-    Route::resource('pacientes', PacienteController::class)->except(['show', 'edit']);
-    
+
 
     Route::get('procedimentos/search', [ProcedimentoController::class, 'search'])->name('procedimentos.search');
     Route::patch('procedimentos/{id}/restore', [ProcedimentoController::class, 'restore'])->name('procedimentos.restore');
@@ -53,6 +54,13 @@ Route::middleware('auth')->group(function () {
 
     Route::get('agendamentos/eventos', [AgendamentoController::class, 'eventos'])->name('agendamentos.eventos');
     Route::resource('agendamentos', AgendamentoController::class);
+
+
+    Route::get('pacientes/{paciente}/prontuario', [ProntuarioController::class, 'show'])->name('prontuarios.show');
+    Route::post('prontuarios/{prontuario}/anamnese', [ProntuarioController::class, 'salvarAnamnese'])->name('prontuarios.anamnese');
+    Route::post('prontuarios/{prontuario}/evolucoes', [ProntuarioController::class, 'storeEvolucao'])->name('prontuarios.evolucoes.store');
+    Route::delete('evolucoes/{evolucao}', [ProntuarioController::class, 'destroyEvolucao'])->name('prontuarios.evolucoes.destroy');
+    Route::delete('evolucao-arquivos/{arquivo}', [ProntuarioController::class, 'destroyArquivo'])->name('prontuarios.arquivos.destroy');
 });
 
 require __DIR__.'/auth.php';

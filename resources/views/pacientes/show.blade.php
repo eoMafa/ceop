@@ -8,6 +8,7 @@
 @endsection
 
 @section('actions')
+    <a href="{{ route('prontuarios.show', $paciente->id) }}" class="btn btn-info text-white">📋 Prontuário</a>
     <a href="{{ route('pacientes.edit', $paciente->id) }}" class="btn btn-primary">Editar</a>
     <a href="{{ route('pacientes.index') }}" class="btn btn-secondary">Voltar</a>
 @endsection

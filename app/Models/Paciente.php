@@ -39,4 +39,9 @@ class Paciente extends Model
     public function getIdadeAttribute(): int{
         return $this->data_nascimento->age;
     }
+
+    public function prontuario()
+    {
+        return $this->hasOne(Prontuario::class);
+    }
 }
