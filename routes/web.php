@@ -13,6 +13,7 @@ use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProntuarioController;
 use App\Http\Controllers\ReciboController;
+use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
 
@@ -183,6 +184,15 @@ Route::middleware('auth')->group(function () {
             'update'  => 'permission:estoque.editar',
             'destroy' => 'permission:estoque.deletar',
         ]);
+    });
+
+    //Relatórios
+    Route::prefix('relatorios')->name('relatorios.')->middleware('permission:relatorios.ver')->group(function () {
+        Route::get('financeiro', [RelatorioController::class, 'financeiro'])->name('financeiro');
+        Route::get('atendimento', [RelatorioController::class, 'atendimento'])->name('atendimento');
+        Route::get('pacientes', [RelatorioController::class, 'pacientes'])->name('pacientes');
+        Route::get('estoque', [RelatorioController::class, 'estoque'])->name('estoque');
+        Route::get('exportar/{tipo}', [RelatorioController::class, 'exportarPdf'])->name('exportar');
     });
 });
 

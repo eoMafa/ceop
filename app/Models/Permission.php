@@ -23,6 +23,7 @@ class Permission extends Model
             'financeiro'    => 'Financeiro',
             'estoque'       => 'Estoque',
             'usuarios'      => 'Usuários',
+            'relatorios'   => 'Relatórios',
         ];
     }
 

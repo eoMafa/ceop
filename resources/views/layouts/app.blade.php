@@ -154,6 +154,33 @@
                             </li>
                         @endif
 
+                        @if(auth()->user()->podeVer('relatorios'))
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle {{ request()->routeIs('relatorios.*') ? 'active' : '' }}"
+                                    href="#" data-bs-toggle="dropdown">
+                                    <span class="nav-link-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <line x1="8" y1="6" x2="21" y2="6" />
+                                            <line x1="8" y1="12" x2="21" y2="12" />
+                                            <line x1="8" y1="18" x2="21" y2="18" />
+                                            <line x1="3" y1="6" x2="3.01" y2="6" />
+                                            <line x1="3" y1="12" x2="3.01" y2="12" />
+                                            <line x1="3" y1="18" x2="3.01" y2="18" />
+                                        </svg>
+                                    </span>
+                                    <span class="nav-link-title">Relatórios</span>
+                                </a>
+                                <div class="dropdown-menu">
+                                    <a href="{{ route('relatorios.financeiro') }}" class="dropdown-item">Financeiro</a>
+                                    <a href="{{ route('relatorios.atendimento') }}" class="dropdown-item">Atendimento</a>
+                                    <a href="{{ route('relatorios.pacientes') }}" class="dropdown-item">Pacientes</a>
+                                    <a href="{{ route('relatorios.estoque') }}" class="dropdown-item">Estoque</a>
+                                </div>
+                            </li>
+                        @endif
+
                         {{-- Usuários --}}
                         @if(auth()->user()->podeVer('usuarios'))
                             <li class="nav-item">
