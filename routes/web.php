@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\AgendamentoController;
+use App\Http\Controllers\ConvenioController;
+use App\Http\Controllers\OrcamentoController;
 use App\Http\Controllers\PacienteController;
+use App\Http\Controllers\PagamentoController;
 use App\Http\Controllers\ProcedimentoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProntuarioController;
@@ -61,6 +64,23 @@ Route::middleware('auth')->group(function () {
     Route::post('prontuarios/{prontuario}/evolucoes', [ProntuarioController::class, 'storeEvolucao'])->name('prontuarios.evolucoes.store');
     Route::delete('evolucoes/{evolucao}', [ProntuarioController::class, 'destroyEvolucao'])->name('prontuarios.evolucoes.destroy');
     Route::delete('evolucao-arquivos/{arquivo}', [ProntuarioController::class, 'destroyArquivo'])->name('prontuarios.arquivos.destroy');
+
+
+    // Convênios
+    Route::get('convenios/search', [ConvenioController::class, 'search'])->name('convenios.search');
+    Route::patch('convenios/{id}/restore', [ConvenioController::class, 'restore'])->name('convenios.restore');
+    Route::get('convenios/{id}/edit', [ConvenioController::class, 'edit'])->name('convenios.edit');
+    Route::resource('convenios', ConvenioController::class)->except(['edit', 'show']);
+
+    // Orçamentos
+    Route::patch('orcamentos/{orcamento}/status', [OrcamentoController::class, 'atualizarStatus'])->name('orcamentos.status');
+    Route::resource('orcamentos', OrcamentoController::class)->except(['show']);
+    Route::get('orcamentos/{orcamento}', [OrcamentoController::class, 'show'])->name('orcamentos.show');
+
+    // Pagamentos
+    Route::patch('parcelas/{parcela}/baixar', [PagamentoController::class, 'baixarParcela'])->name('parcelas.baixar');
+    Route::patch('parcelas/{parcela}/cancelar', [PagamentoController::class, 'cancelarParcela'])->name('parcelas.cancelar');
+    Route::resource('pagamentos', PagamentoController::class)->only(['index', 'create', 'store', 'show', 'destroy']);
 });
 
 require __DIR__.'/auth.php';

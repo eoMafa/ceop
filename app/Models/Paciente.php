@@ -26,7 +26,8 @@ class Paciente extends Model
         'cidade',
         'estado',
         'observacoes',
-        'ativo'
+        'ativo', 
+        'convenio_id'
     ];
 
     protected function casts(): array {
@@ -43,5 +44,10 @@ class Paciente extends Model
     public function prontuario()
     {
         return $this->hasOne(Prontuario::class);
+    }
+
+    public function convenio()
+    {
+        return $this->belongsTo(Convenio::class);
     }
 }
