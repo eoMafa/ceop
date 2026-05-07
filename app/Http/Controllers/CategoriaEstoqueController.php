@@ -26,22 +26,22 @@ class CategoriaEstoqueController extends Controller
             ->with('success', 'Categoria criada com sucesso!');
     }
 
-    public function update(Request $request, CategoriaEstoque $categoriaEstoque)
+    public function update(Request $request, CategoriaEstoque $categoria)
     {
         $request->validate([
             'nome'      => 'required|string|max:255',
             'descricao' => 'nullable|string',
         ]);
 
-        $categoriaEstoque->update($request->only('nome', 'descricao'));
+        $categoria->update($request->only('nome', 'descricao'));
 
         return redirect()->route('estoque.categorias.index')
             ->with('success', 'Categoria atualizada com sucesso!');
     }
 
-    public function destroy(CategoriaEstoque $categoriaEstoque)
+    public function destroy(CategoriaEstoque $categoria)
     {
-        $categoriaEstoque->delete();
+        $categoria->delete();
         return redirect()->route('estoque.categorias.index')
             ->with('success', 'Categoria removida com sucesso!');
     }

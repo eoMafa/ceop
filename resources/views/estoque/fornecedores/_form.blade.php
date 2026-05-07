@@ -15,7 +15,7 @@
             <div class="col-md-3">
                 <label class="form-label">CNPJ</label>
                 <input type="text" name="cnpj" id="cnpj"
-                    class="form-control @error('cnpj') is-invalid @enderror"
+                    class="form-control @error('cnpj') is-invalid @enderror cpf-cnpj"
                     value="{{ old('cnpj', $fornecedor->cnpj ?? '') }}"
                     placeholder="00.000.000/0000-00">
                 @error('cnpj') <div class="invalid-feedback">{{ $message }}</div> @enderror
@@ -23,8 +23,8 @@
 
             <div class="col-md-3">
                 <label class="form-label">Telefone</label>
-                <input type="text" name="telefone" id="telefone_fornecedor"
-                    class="form-control @error('telefone') is-invalid @enderror"
+                <input type="text" name="telefone" id="telefone"
+                    class="form-control @error('telefone') is-invalid @enderror telefone"
                     value="{{ old('telefone', $fornecedor->telefone ?? '') }}"
                     placeholder="(00) 00000-0000">
                 @error('telefone') <div class="invalid-feedback">{{ $message }}</div> @enderror
@@ -57,9 +57,13 @@
             <div class="col-md-2">
                 <label class="form-label">CEP</label>
                 <input type="text" name="cep" id="cep_fornecedor"
-                    class="form-control"
+                    class="form-control cep viacep"
                     value="{{ old('cep', $fornecedor->cep ?? '') }}"
-                    placeholder="00000-000">
+                    placeholder="00000-000"
+                    data-logradouro="#logradouro_fornecedor"
+                    data-bairro="#bairro_fornecedor"
+                    data-cidade="#cidade_fornecedor"
+                    data-estado="#estado_fornecedor">
             </div>
 
             <div class="col-md-5">
@@ -121,38 +125,5 @@
 </div>
 
 @push('scripts')
-<script>
-    // Máscara CNPJ
-    if (document.getElementById('cnpj')) {
-        new Cleave('#cnpj', {
-            delimiters: ['.', '.', '/', '-'],
-            blocks: [2, 3, 3, 4, 2],
-            numericOnly: true,
-        });
-    }
 
-    // Máscara telefone fornecedor
-    if (document.getElementById('telefone_fornecedor')) {
-        new Cleave('#telefone_fornecedor', {
-            delimiters: ['(', ') ', '-'],
-            blocks: [0, 2, 5, 4],
-            numericOnly: true,
-        });
-    }
-
-    // ViaCEP fornecedor
-    document.getElementById('cep_fornecedor').addEventListener('blur', function () {
-        const cep = this.value.replace(/\D/g, '');
-        if (cep.length !== 8) return;
-        fetch(`https://viacep.com.br/ws/${cep}/json/`)
-            .then(r => r.json())
-            .then(data => {
-                if (data.erro) return;
-                document.getElementById('logradouro_fornecedor').value = data.logradouro;
-                document.getElementById('bairro_fornecedor').value = data.bairro;
-                document.getElementById('cidade_fornecedor').value = data.localidade;
-                document.getElementById('estado_fornecedor').value = data.uf;
-            });
-    });
-</script>
 @endpush

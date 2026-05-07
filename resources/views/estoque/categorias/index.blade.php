@@ -133,7 +133,7 @@ function editarCategoria(id, nome, descricao) {
     document.getElementById('edit-nome').value = nome;
     document.getElementById('edit-descricao').value = descricao || '';
     document.getElementById('form-editar-categoria').action = `/estoque/categorias/${id}`;
-    const modal = bootstrap.Modal.getOrCreate(document.getElementById('modal-editar-categoria'));
+    const modal = new bootstrap.Modal(document.getElementById('modal-editar-categoria'));
     modal.show();
 }
 </script>

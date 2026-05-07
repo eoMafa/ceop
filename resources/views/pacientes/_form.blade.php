@@ -16,8 +16,8 @@
 
             <div class="col-md-3">
                 <label class="form-label">CPF</label>
-                <input type="text" name="cpf" id="cpf" class="form-control @error('cpf') is-invalid @enderror"
-                    value="{{ old('cpf', $paciente->cpf ?? '') }}" placeholder="000.000.000-00">
+                <input type="text" name="cpf" id="cpf" class="form-control @error('cpf') is-invalid @enderror cpf-cnpj"
+                    value="{{ old('cpf', $paciente->cpf ?? '') }}" placeholder="000.000.000-00" maxlength="14">
                 @error('cpf')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
@@ -57,7 +57,7 @@
 
             <div class="col-md-3">
                 <label class="form-label">Telefone</label>
-                <input type="text" name="telefone" id="telefone" class="form-control @error('telefone') is-invalid @enderror"
+                <input type="text" name="telefone" id="telefone" class="form-control @error('telefone') is-invalid @enderror telefone"
                     value="{{ old('telefone', $paciente->telefone ?? '') }}" placeholder="(00) 00000-0000">
                 @error('telefone')
                     <div class="invalid-feedback">{{ $message }}</div>
@@ -87,7 +87,11 @@
             <div class="col-md-2">
                 <label class="form-label">CEP</label>
                 <input type="text" name="cep" id="cep"
-                    class="form-control @error('cep') is-invalid @enderror"
+                    class="form-control @error('cep') is-invalid @enderror cep viacep"
+                    data-logradouro="#logradouro"
+                    data-bairro="#bairro"
+                    data-cidade="#cidade"
+                    data-estado="#estado"
                     value="{{ old('cep', $paciente->cep ?? '') }}" placeholder="00000-000">
                 @error('cep')
                     <div class="invalid-feedback">{{ $message }}</div>
@@ -176,21 +180,5 @@
 </div>
 
 @push('scripts')
-<script>
-    // Auto-preenchimento de CEP via ViaCEP
-    document.getElementById('cep').addEventListener('blur', function () {
-        const cep = this.value.replace(/\D/g, '');
-        if (cep.length !== 8) return;
 
-        fetch(`https://viacep.com.br/ws/${cep}/json/`)
-            .then(r => r.json())
-            .then(data => {
-                if (data.erro) return;
-                document.getElementById('logradouro').value = data.logradouro;
-                document.getElementById('bairro').value = data.bairro;
-                document.getElementById('cidade').value = data.localidade;
-                document.getElementById('estado').value = data.uf;
-            });
-    });
-</script>
 @endpush
