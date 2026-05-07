@@ -3,6 +3,7 @@
 use App\Http\Controllers\AgendamentoController;
 use App\Http\Controllers\CategoriaEstoqueController;
 use App\Http\Controllers\ConvenioController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FornecedorController;
 use App\Http\Controllers\OrcamentoController;
 use App\Http\Controllers\PacienteController;
@@ -19,9 +20,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::get('/register', function () {
     return redirect()->route('login');
