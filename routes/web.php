@@ -8,6 +8,7 @@ use App\Http\Controllers\PagamentoController;
 use App\Http\Controllers\ProcedimentoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProntuarioController;
+use App\Http\Controllers\ReciboController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
 
@@ -81,6 +82,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('parcelas/{parcela}/baixar', [PagamentoController::class, 'baixarParcela'])->name('parcelas.baixar');
     Route::patch('parcelas/{parcela}/cancelar', [PagamentoController::class, 'cancelarParcela'])->name('parcelas.cancelar');
     Route::resource('pagamentos', PagamentoController::class)->only(['index', 'create', 'store', 'show', 'destroy']);
+
+
+    Route::get('pagamentos/{pagamento}/recibo', [ReciboController::class, 'gerar'])->name('recibos.gerar');
 });
 
 require __DIR__.'/auth.php';

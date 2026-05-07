@@ -8,6 +8,9 @@
 @endsection
 
 @section('actions')
+     <a href="{{ route('recibos.gerar', $pagamento->id) }}" class="btn btn-success" target="_blank">
+        📄 Gerar Recibo PDF
+    </a>
     <a href="{{ route('pagamentos.index') }}" class="btn btn-secondary">Voltar</a>
 @endsection
 
