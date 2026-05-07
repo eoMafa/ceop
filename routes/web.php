@@ -1,11 +1,14 @@
 <?php
 
 use App\Http\Controllers\AgendamentoController;
+use App\Http\Controllers\CategoriaEstoqueController;
 use App\Http\Controllers\ConvenioController;
+use App\Http\Controllers\FornecedorController;
 use App\Http\Controllers\OrcamentoController;
 use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\PagamentoController;
 use App\Http\Controllers\ProcedimentoController;
+use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProntuarioController;
 use App\Http\Controllers\ReciboController;
@@ -85,6 +88,29 @@ Route::middleware('auth')->group(function () {
 
 
     Route::get('pagamentos/{pagamento}/recibo', [ReciboController::class, 'gerar'])->name('recibos.gerar');
+
+
+    Route::prefix('estoque')->name('estoque.')->group(function () {
+
+        // Categorias
+        Route::resource('categorias', CategoriaEstoqueController::class)
+            ->only(['index', 'store', 'update', 'destroy']);
+
+        // Fornecedores
+        Route::get('fornecedores/search', [FornecedorController::class, 'search'])->name('fornecedores.search');
+        Route::patch('fornecedores/{id}/restore', [FornecedorController::class, 'restore'])->name('fornecedores.restore');
+        Route::get('fornecedores/{id}/edit', [FornecedorController::class, 'edit'])->name('fornecedores.edit');
+        Route::resource('fornecedores', FornecedorController::class)->parameters([
+            'fornecedores' => 'fornecedor'
+        ])->except(['edit']);
+
+        // Produtos
+        Route::get('produtos/search', [ProdutoController::class, 'search'])->name('produtos.search');
+        Route::patch('produtos/{id}/restore', [ProdutoController::class, 'restore'])->name('produtos.restore');
+        Route::get('produtos/{id}/edit', [ProdutoController::class, 'edit'])->name('produtos.edit');
+        Route::post('produtos/{produto}/movimentar', [ProdutoController::class, 'movimentar'])->name('produtos.movimentar');
+        Route::resource('produtos', ProdutoController::class)->except(['edit']);
+    });
 });
 
 require __DIR__.'/auth.php';

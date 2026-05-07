@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orcamento_items');
+        Schema::dropIfExists('orcamento_itens');
     }
 };

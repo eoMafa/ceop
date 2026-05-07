@@ -132,6 +132,28 @@
                             </div>
                         </li>
 
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle {{ request()->routeIs('estoque.*') ? 'active' : '' }}"
+                                href="#" data-bs-toggle="dropdown">
+                                <span class="nav-link-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <path d="M12 3l8 4.5v9l-8 4.5l-8 -4.5v-9l8 -4.5" />
+                                        <path d="M12 12l8 -4.5" />
+                                        <path d="M12 12v9" />
+                                        <path d="M12 12l-8 -4.5" />
+                                    </svg>
+                                </span>
+                                <span class="nav-link-title">Estoque</span>
+                            </a>
+                            <div class="dropdown-menu">
+                                <a href="{{ route('estoque.produtos.index') }}" class="dropdown-item">Produtos</a>
+                                <a href="{{ route('estoque.fornecedores.index') }}" class="dropdown-item">Fornecedores</a>
+                                <a href="{{ route('estoque.categorias.index') }}" class="dropdown-item">Categorias</a>
+                            </div>
+                        </li>
+
                     </ul>
 
                     <div class="mt-auto pb-3">
