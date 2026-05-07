@@ -203,6 +203,17 @@
                                 @enderror
                             </div>
 
+                            {{-- Materiais utilizados --}}
+                            <div class="col-12">
+                                <label class="form-label">Materiais Utilizados</label>
+                                <div id="materiais-container">
+                                    {{-- Linhas adicionadas dinamicamente --}}
+                                </div>
+                                <button type="button" class="btn btn-sm btn-secondary mt-2" id="btn-add-material">
+                                    + Adicionar Material
+                                </button>
+                            </div>
+
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-sm mt-3">Registrar Evolução</button>
@@ -269,6 +280,21 @@
                                             @endforeach
                                         </div>
                                     @endif
+
+                                    {{-- Materiais --}}
+                                    @if($evolucao->materiais->count() > 0)
+                                        <div class="mt-2">
+                                            <small class="text-secondary fw-bold">Materiais utilizados:</small>
+                                            <div class="d-flex flex-wrap gap-2 mt-1">
+                                                @foreach($evolucao->materiais as $material)
+                                                    <span class="badge bg-secondary text-white">
+                                                        {{ $material->produto->nome }}
+                                                        — {{ number_format($material->quantidade, 2, ',', '.') }} {{ $material->produto->unidade }}
+                                                    </span>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <form action="{{ route('prontuarios.evolucoes.destroy', $evolucao->id) }}"
@@ -292,3 +318,64 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+@php
+    $produtosEstoque = \App\Models\Produto::whereRaw('estoque_atual > 0')
+        ->orderBy('nome')
+        ->get(['id', 'nome', 'unidade', 'estoque_atual']);
+@endphp
+const produtos = @json($produtosEstoque);
+
+let materialIndex = 0;
+
+document.getElementById('btn-add-material').addEventListener('click', function () {
+    const container = document.getElementById('materiais-container');
+
+    const options = produtos.map(p =>
+        `<option value="${p.id}" data-unidade="${p.unidade}" data-estoque="${p.estoque_atual}">
+            ${p.nome} (${p.estoque_atual} ${p.unidade} disponível)
+        </option>`
+    ).join('');
+
+    const html = `
+        <div class="row g-2 mb-2 material-row align-items-center">
+            <div class="col-md-7">
+                <select name="materiais[${materialIndex}][produto_id]"
+                    class="form-select form-select-sm select-produto">
+                    <option value="">Selecione o produto...</option>
+                    ${options}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <div class="input-group input-group-sm">
+                    <input type="number" name="materiais[${materialIndex}][quantidade]"
+                        class="form-control form-control-sm input-quantidade"
+                        placeholder="Qtd" min="0.01" step="0.01">
+                    <span class="input-group-text unidade-label">un</span>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-sm btn-ghost-danger btn-remover-material w-100">✕</button>
+            </div>
+        </div>`;
+
+    container.insertAdjacentHTML('beforeend', html);
+    materialIndex++;
+
+    const rows = container.querySelectorAll('.material-row');
+    const lastRow = rows[rows.length - 1];
+
+    lastRow.querySelector('.select-produto').addEventListener('change', function () {
+        const option = this.options[this.selectedIndex];
+        const unidade = option.dataset.unidade || 'un';
+        lastRow.querySelector('.unidade-label').textContent = unidade;
+    });
+
+    lastRow.querySelector('.btn-remover-material').addEventListener('click', function () {
+        lastRow.remove();
+    });
+});
+</script>
+@endpush

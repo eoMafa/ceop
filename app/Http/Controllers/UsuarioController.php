@@ -62,7 +62,8 @@ class UsuarioController extends Controller
      */
     public function edit(User $usuario)
     {
-        return view('usuarios.edit', compact('usuario'));
+        $permissions = \App\Models\Permission::orderBy('modulo')->orderBy('acao')->get();
+        return view('usuarios.edit', compact('usuario', 'permissions'));
     }
 
     /**
@@ -71,14 +72,27 @@ class UsuarioController extends Controller
     public function update(Request $request, User $usuario)
     {
         $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|max:255|unique:users,email,' . $usuario->id,
-            'role'     => 'required|in:admin,dentista,recepcionista',
-            'cro'      => 'nullable|string|max:20',
-            'telefone' => 'nullable|string|max:20',
+            'name'         => 'required|string|max:255',
+            'email'        => 'required|email|max:255|unique:users,email,' . $usuario->id,
+            'role'         => 'required|in:admin,dentista,recepcionista',
+            'cro'          => 'nullable|string|max:20',
+            'telefone'     => 'nullable|string|max:20',
+            'permissions'  => 'nullable|array',
+            'permissions.*'=> 'exists:permissions,id',
         ]);
 
-        $usuario->update($validated);
+        $usuario->update([
+            'name'     => $validated['name'],
+            'email'    => $validated['email'],
+            'role'     => $validated['role'],
+            'cro'      => $validated['cro'] ?? null,
+            'telefone' => $validated['telefone'] ?? null,
+        ]);
+
+        // Atualiza permissões (admin não precisa)
+        if (!$usuario->isAdmin()) {
+            $usuario->permissions()->sync($validated['permissions'] ?? []);
+        }
 
         return redirect()->route('usuarios.index')
             ->with('success', 'Usuário atualizado com sucesso!');

@@ -57,6 +57,47 @@
                 @enderror
             </div>
 
+            {{-- Permissões --}}
+            @if(isset($usuario->id))
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h3 class="card-title">Permissões de Acesso</h3>
+                    <span class="ms-auto text-secondary">Admin tem acesso total automaticamente</span>
+                </div>
+                <div class="card-body">
+                    @php
+                        $modulos = \App\Models\Permission::modulos();
+                        $acoes   = \App\Models\Permission::acoes();
+                        $permissoes = $permissions->groupBy('modulo');
+                        $userPermissions = $usuario->permissions->pluck('id')->toArray();
+                    @endphp
+
+                    @foreach($modulos as $modulo => $labelModulo)
+                        <div class="mb-3">
+                            <div class="fw-bold mb-2">{{ $labelModulo }}</div>
+                            <div class="d-flex gap-3 flex-wrap">
+                                @foreach($acoes as $acao => $labelAcao)
+                                    @php
+                                        $permission = $permissoes->get($modulo)?->firstWhere('acao', $acao);
+                                    @endphp
+                                    @if($permission)
+                                        <label class="form-check">
+                                            <input type="checkbox" class="form-check-input"
+                                                name="permissions[]"
+                                                value="{{ $permission->id }}"
+                                                {{ in_array($permission->id, $userPermissions) ? 'checked' : '' }}>
+                                            <span class="form-check-label">{{ $labelAcao }}</span>
+                                        </label>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                        @if(!$loop->last) <hr> @endif
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
             @if(!isset($usuario->id))
                 <div class="col-md-6">
                     <label class="form-label required">Senha</label>

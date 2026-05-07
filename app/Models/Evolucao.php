@@ -40,4 +40,9 @@ class Evolucao extends Model
     {
         return $this->hasMany(EvolucaoArquivo::class);
     }
+
+    public function materiais()
+    {
+        return $this->hasMany(EvolucaoMaterial::class);
+    }
 }

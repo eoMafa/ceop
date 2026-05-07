@@ -19,7 +19,7 @@ class ProntuarioController extends Controller
             'paciente_id' => $paciente->id,
         ]);
 
-        $prontuario->load(['anamnese', 'evolucoes.dentista', 'evolucoes.arquivos', 'evolucoes.agendamento']);
+        $prontuario->load(['anamnese', 'evolucoes.dentista', 'evolucoes.arquivos', 'evolucoes.agendamento', 'evolucoes.materiais.produto']);
 
         $dentistas = User::where('role', 'dentista')->where('ativo', true)->orderBy('name')->get();
 
@@ -61,12 +61,15 @@ class ProntuarioController extends Controller
     public function storeEvolucao(Request $request, Prontuario $prontuario)
     {
         $validated = $request->validate([
-            'dentista_id'    => 'required|exists:users,id',
-            'agendamento_id' => 'nullable|exists:agendamentos,id',
-            'dente'          => 'nullable|string|max:10',
-            'face'           => 'nullable|string|max:50',
-            'descricao'      => 'required|string',
-            'arquivos.*'     => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,mp4,mov,avi,pdf|max:102400',
+            'dentista_id'          => 'required|exists:users,id',
+            'agendamento_id'       => 'nullable|exists:agendamentos,id',
+            'dente'                => 'nullable|string|max:10',
+            'face'                 => 'nullable|string|max:50',
+            'descricao'            => 'required|string',
+            'arquivos.*'           => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,mp4,mov,avi,pdf|max:102400',
+            'materiais'            => 'nullable|array',
+            'materiais.*.produto_id'  => 'required|exists:produtos,id',
+            'materiais.*.quantidade'  => 'required|numeric|min:0.01',
         ]);
 
         $evolucao = $prontuario->evolucoes()->create([
@@ -76,6 +79,46 @@ class ProntuarioController extends Controller
             'face'           => $validated['face'] ?? null,
             'descricao'      => $validated['descricao'],
         ]);
+
+        // Processa materiais e baixa estoque automaticamente
+        if (!empty($validated['materiais'])) {
+            foreach ($validated['materiais'] as $item) {
+                $produto = \App\Models\Produto::findOrFail($item['produto_id']);
+
+                // Verifica estoque suficiente
+                if ($produto->estoque_atual < $item['quantidade']) {
+                    // Deleta evolução criada e retorna erro
+                    $evolucao->delete();
+                    return back()
+                        ->withInput()
+                        ->with('error', "Estoque insuficiente para o produto: {$produto->nome}");
+                }
+
+                // Registra material usado
+                $evolucao->materiais()->create([
+                    'produto_id'     => $produto->id,
+                    'quantidade'     => $item['quantidade'],
+                    'valor_unitario' => $produto->valor_custo,
+                ]);
+
+                // Baixa estoque automaticamente
+                $estoqueAnterior = $produto->estoque_atual;
+                $estoqueNovo = $estoqueAnterior - $item['quantidade'];
+
+                \App\Models\MovimentacaoEstoque::create([
+                    'produto_id'        => $produto->id,
+                    'user_id'           => auth()->id(),
+                    'tipo'              => 'saida',
+                    'quantidade'        => $item['quantidade'],
+                    'valor_unitario'    => $produto->valor_custo,
+                    'estoque_anterior'  => $estoqueAnterior,
+                    'estoque_posterior' => $estoqueNovo,
+                    'motivo'            => "Uso em evolução do prontuário #{$prontuario->id}",
+                ]);
+
+                $produto->update(['estoque_atual' => $estoqueNovo]);
+            }
+        }
 
         // Upload dos arquivos
         if ($request->hasFile('arquivos')) {

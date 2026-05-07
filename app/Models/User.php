@@ -2,19 +2,13 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     protected $fillable = [
@@ -24,7 +18,7 @@ class User extends Authenticatable
         'role',
         'cro',
         'telefone',
-        'ativo'
+        'ativo',
     ];
 
     protected $hidden = [
@@ -32,17 +26,12 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'ativo' => 'boolean',
+            'password'          => 'hashed',
+            'ativo'             => 'boolean',
         ];
     }
 
@@ -59,5 +48,42 @@ class User extends Authenticatable
     public function isRecepcionista(): bool
     {
         return $this->role === 'recepcionista';
+    }
+
+    public function permissions(): BelongsToMany
+    {
+        return $this->belongsToMany(Permission::class);
+    }
+
+    public function temPermissao(string $ability): bool
+    {
+        if ($this->isAdmin()) return true;
+
+        [$modulo, $acao] = explode('.', $ability);
+
+        return $this->permissions
+            ->where('modulo', $modulo)
+            ->where('acao', $acao)
+            ->isNotEmpty();
+    }
+
+    public function podeVer(string $modulo): bool
+    {
+        return $this->temPermissao("{$modulo}.ver");
+    }
+
+    public function podeCriar(string $modulo): bool
+    {
+        return $this->temPermissao("{$modulo}.criar");
+    }
+
+    public function podeEditar(string $modulo): bool
+    {
+        return $this->temPermissao("{$modulo}.editar");
+    }
+
+    public function podeDeletar(string $modulo): bool
+    {
+        return $this->temPermissao("{$modulo}.deletar");
     }
 }

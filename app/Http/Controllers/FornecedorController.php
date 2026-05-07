@@ -23,7 +23,13 @@ class FornecedorController extends Controller
     {
         $validated = $request->validate([
             'nome'        => 'required|string|max:255',
-            'cnpj'        => ['nullable|string|max:18|unique:fornecedores', new CpfCnpjValido],
+            'cnpj' => [
+                'nullable',
+                'string',
+                'max:18',
+                'unique:fornecedores',
+                new CpfCnpjValido
+            ],
             'telefone'    => 'nullable|string|max:20',
             'email'       => 'nullable|email|max:255',
             'contato'     => 'nullable|string|max:255',
