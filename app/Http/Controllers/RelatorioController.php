@@ -43,8 +43,8 @@ class RelatorioController extends Controller
             ->get();
 
         // Receita por forma de pagamento
-        $receitaPorForma = Parcela::where('status', 'pago')
-            ->whereBetween('data_pagamento', [$dataInicio, $dataFim])
+        $receitaPorForma = Parcela::where('parcelas.status', 'pago')
+            ->whereBetween('parcelas.data_pagamento', [$dataInicio, $dataFim])
             ->join('pagamentos', 'parcelas.pagamento_id', '=', 'pagamentos.id')
             ->selectRaw('pagamentos.forma_pagamento, SUM(parcelas.valor) as total, COUNT(*) as quantidade')
             ->groupBy('pagamentos.forma_pagamento')
@@ -260,7 +260,13 @@ class RelatorioController extends Controller
             'dataInicio'       => $dataInicio,
             'dataFim'          => $dataFim,
             'receitaPeriodo'   => Parcela::where('status', 'pago')->whereBetween('data_pagamento', [$dataInicio, $dataFim])->sum('valor'),
-            'receitaPorForma'  => Parcela::where('status', 'pago')->whereBetween('data_pagamento', [$dataInicio, $dataFim])->join('pagamentos', 'parcelas.pagamento_id', '=', 'pagamentos.id')->selectRaw('pagamentos.forma_pagamento, SUM(parcelas.valor) as total, COUNT(*) as quantidade')->groupBy('pagamentos.forma_pagamento')->orderByDesc('total')->get(),
+            'receitaPorForma'  => Parcela::where('parcelas.status', 'pago')
+                ->whereBetween('parcelas.data_pagamento', [$dataInicio, $dataFim])
+                ->join('pagamentos', 'parcelas.pagamento_id', '=', 'pagamentos.id')
+                ->selectRaw('pagamentos.forma_pagamento, SUM(parcelas.valor) as total, COUNT(*) as quantidade')
+                ->groupBy('pagamentos.forma_pagamento')
+                ->orderByDesc('total')
+                ->get(),
             'orcamentosPorStatus' => Orcamento::whereBetween('created_at', [$dataInicio . ' 00:00:00', $dataFim . ' 23:59:59'])->selectRaw('status, COUNT(*) as quantidade, SUM(total_liquido) as total')->groupBy('status')->get(),
             'parcelasVencidas' => Parcela::where('status', 'pendente')->where('data_vencimento', '<', now()->toDateString())->with('pagamento.paciente')->orderBy('data_vencimento')->get(),
         ];
