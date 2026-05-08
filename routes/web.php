@@ -38,14 +38,6 @@ Route::middleware('auth')->group(function () {
     // Pacientes
     Route::get('pacientes/search', [PacienteController::class, 'search'])->name('pacientes.search')->middleware('permission:pacientes.ver');
     Route::patch('pacientes/{id}/restore', [PacienteController::class, 'restore'])->name('pacientes.restore')->middleware('permission:pacientes.editar');
-    Route::get('pacientes/{id}', function (int $id) {
-        $paciente = \App\Models\Paciente::withTrashed()->findOrFail($id);
-        return view('pacientes.show', compact('paciente'));
-    })->name('pacientes.show')->middleware('permission:pacientes.ver');
-    Route::get('pacientes/{id}/edit', function (int $id) {
-        $paciente = \App\Models\Paciente::withTrashed()->findOrFail($id);
-        return view('pacientes.edit', compact('paciente'));
-    })->name('pacientes.edit')->middleware('permission:pacientes.editar');
     Route::resource('pacientes', PacienteController::class)
         ->except(['show', 'edit'])
         ->middleware([
@@ -55,6 +47,14 @@ Route::middleware('auth')->group(function () {
             'update'  => 'permission:pacientes.editar',
             'destroy' => 'permission:pacientes.deletar',
         ]);
+        Route::get('pacientes/{id}', function (int $id) {
+            $paciente = \App\Models\Paciente::withTrashed()->findOrFail($id);
+            return view('pacientes.show', compact('paciente'));
+        })->name('pacientes.show')->middleware('permission:pacientes.ver');
+        Route::get('pacientes/{id}/edit', function (int $id) {
+            $paciente = \App\Models\Paciente::withTrashed()->findOrFail($id);
+            return view('pacientes.edit', compact('paciente'));
+        })->name('pacientes.edit')->middleware('permission:pacientes.editar');
 
 
     // Procedimentos
