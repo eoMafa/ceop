@@ -19,7 +19,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>🦷 {{ config('app.name') }}</h1>
+        <h1>{{ config('app.name') }}</h1>
         <p>Relatório de Pacientes</p>
     </div>
 
