@@ -13,6 +13,7 @@ use App\Models\Procedimento;
 use App\Models\EvolucaoMaterial;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RelatorioController extends Controller
 {
@@ -73,6 +74,131 @@ class RelatorioController extends Controller
             'receitaPorForma',
             'orcamentosPorStatus',
             'receitaPorMes',
+        ));
+    }
+
+    public function lucratividade(Request $request)
+    {
+        $dataInicio = $request->input('data_inicio', now()->startOfMonth()->format('Y-m-d'));
+        $dataFim    = $request->input('data_fim', now()->endOfMonth()->format('Y-m-d'));
+        $dentistaId = $request->input('dentista_id');
+
+        // Receita recebida no período
+        $receita = Parcela::where('parcelas.status', 'pago')
+            ->whereBetween('parcelas.data_pagamento', [$dataInicio, $dataFim])
+            ->sum('parcelas.valor');
+
+        // Custo de materiais usados no período
+        $custoMateriais = EvolucaoMaterial::whereBetween('evolucao_materiais.created_at', [
+                $dataInicio . ' 00:00:00',
+                $dataFim . ' 23:59:59'
+            ])
+            ->sum(DB::raw('quantidade * valor_unitario'));
+
+        $margem       = $receita - $custoMateriais;
+        $percentual   = $receita > 0 ? ($margem / $receita) * 100 : 0;
+
+        // Lucratividade por dentista
+        $porDentista = User::where('role', 'dentista')
+            ->where('ativo', true)
+            ->get()
+            ->map(function ($dentista) use ($dataInicio, $dataFim) {
+                $receita = Parcela::where('parcelas.status', 'pago')
+                    ->whereBetween('parcelas.data_pagamento', [$dataInicio, $dataFim])
+                    ->join('pagamentos', 'parcelas.pagamento_id', '=', 'pagamentos.id')
+                    ->join('orcamentos', 'pagamentos.orcamento_id', '=', 'orcamentos.id')
+                    ->where('orcamentos.dentista_id', $dentista->id)
+                    ->sum('parcelas.valor');
+
+                $custo = EvolucaoMaterial::whereBetween('evolucao_materiais.created_at', [
+                        $dataInicio . ' 00:00:00',
+                        $dataFim . ' 23:59:59'
+                    ])
+                    ->join('evolucoes', 'evolucao_materiais.evolucao_id', '=', 'evolucoes.id')
+                    ->where('evolucoes.dentista_id', $dentista->id)
+                    ->sum(DB::raw('evolucao_materiais.quantidade * evolucao_materiais.valor_unitario'));
+
+                return [
+                    'dentista'   => $dentista->name,
+                    'receita'    => $receita,
+                    'custo'      => $custo,
+                    'margem'     => $receita - $custo,
+                    'percentual' => $receita > 0 ? (($receita - $custo) / $receita) * 100 : 0,
+                ];
+            })
+            ->sortByDesc('receita');
+
+        // Lucratividade por procedimento
+        $porProcedimento = Procedimento::get()->map(function ($proc) use ($dataInicio, $dataFim) {
+            $receita = Parcela::where('parcelas.status', 'pago')
+                ->whereBetween('parcelas.data_pagamento', [$dataInicio, $dataFim])
+                ->join('pagamentos', 'parcelas.pagamento_id', '=', 'pagamentos.id')
+                ->join('orcamentos', 'pagamentos.orcamento_id', '=', 'orcamentos.id')
+                ->join('orcamento_itens', 'orcamentos.id', '=', 'orcamento_itens.orcamento_id')
+                ->where('orcamento_itens.procedimento_id', $proc->id)
+                ->sum('parcelas.valor');
+
+            $atendimentos = Agendamento::where('procedimento_id', $proc->id)
+                ->whereBetween('data_hora_inicio', [$dataInicio . ' 00:00:00', $dataFim . ' 23:59:59'])
+                ->where('status', 'concluido')
+                ->count();
+
+            $custo = EvolucaoMaterial::whereBetween('evolucao_materiais.created_at', [
+                    $dataInicio . ' 00:00:00',
+                    $dataFim . ' 23:59:59'
+                ])
+                ->join('evolucoes', 'evolucao_materiais.evolucao_id', '=', 'evolucoes.id')
+                ->join('prontuarios', 'evolucoes.prontuario_id', '=', 'prontuarios.id')
+                ->join('agendamentos', function ($join) use ($proc) {
+                    $join->on('agendamentos.paciente_id', '=', 'prontuarios.paciente_id')
+                        ->where('agendamentos.procedimento_id', $proc->id);
+                })
+                ->sum(DB::raw('evolucao_materiais.quantidade * evolucao_materiais.valor_unitario'));
+
+            return [
+                'procedimento' => $proc->nome,
+                'atendimentos' => $atendimentos,
+                'receita'      => $receita,
+                'custo'        => $custo,
+                'margem'       => $receita - $custo,
+                'percentual'   => $receita > 0 ? (($receita - $custo) / $receita) * 100 : 0,
+            ];
+        })
+        ->filter(fn($p) => $p['receita'] > 0 || $p['atendimentos'] > 0)
+        ->sortByDesc('receita');
+
+        // Evolução mensal da margem (últimos 6 meses)
+        $evolucaoMensal = collect(range(5, 0))->map(function ($mesesAtras) {
+            $inicio = now()->subMonths($mesesAtras)->startOfMonth()->format('Y-m-d');
+            $fim    = now()->subMonths($mesesAtras)->endOfMonth()->format('Y-m-d');
+            $mes    = now()->subMonths($mesesAtras)->format('m/Y');
+
+            $receita = Parcela::where('parcelas.status', 'pago')
+                ->whereBetween('parcelas.data_pagamento', [$inicio, $fim])
+                ->sum('parcelas.valor');
+
+            $custo = EvolucaoMaterial::whereBetween('evolucao_materiais.created_at', [
+                    $inicio . ' 00:00:00',
+                    $fim . ' 23:59:59'
+                ])
+                ->sum(DB::raw('quantidade * valor_unitario'));
+
+            return [
+                'mes'     => $mes,
+                'receita' => $receita,
+                'custo'   => $custo,
+                'margem'  => $receita - $custo,
+            ];
+        });
+
+        $dentistas = User::where('role', 'dentista')->where('ativo', true)->orderBy('name')->get();
+
+        return view('relatorios.lucratividade', compact(
+            'dataInicio', 'dataFim',
+            'receita', 'custoMateriais', 'margem', 'percentual',
+            'porDentista', 'porProcedimento',
+            'evolucaoMensal',
+            'dentistas',
         ));
     }
 

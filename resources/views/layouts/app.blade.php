@@ -174,6 +174,7 @@
                                 </a>
                                 <div class="dropdown-menu">
                                     <a href="{{ route('relatorios.financeiro') }}" class="dropdown-item">Financeiro</a>
+                                    <a href="{{ route('relatorios.lucratividade') }}" class="dropdown-item">Lucratividade</a>
                                     <a href="{{ route('relatorios.atendimento') }}" class="dropdown-item">Atendimento</a>
                                     <a href="{{ route('relatorios.pacientes') }}" class="dropdown-item">Pacientes</a>
                                     <a href="{{ route('relatorios.estoque') }}" class="dropdown-item">Estoque</a>

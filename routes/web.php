@@ -189,6 +189,7 @@ Route::middleware('auth')->group(function () {
     //Relatórios
     Route::prefix('relatorios')->name('relatorios.')->middleware('permission:relatorios.ver')->group(function () {
         Route::get('financeiro', [RelatorioController::class, 'financeiro'])->name('financeiro');
+        Route::get('lucratividade', [RelatorioController::class, 'lucratividade'])->name('lucratividade');
         Route::get('atendimento', [RelatorioController::class, 'atendimento'])->name('atendimento');
         Route::get('pacientes', [RelatorioController::class, 'pacientes'])->name('pacientes');
         Route::get('estoque', [RelatorioController::class, 'estoque'])->name('estoque');
