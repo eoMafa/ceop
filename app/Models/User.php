@@ -86,4 +86,14 @@ class User extends Authenticatable
     {
         return $this->temPermissao("{$modulo}.deletar");
     }
+
+    public function notificacoes()
+    {
+        return $this->hasMany(Notificacao::class)->latest();
+    }
+
+    public function notificacoesNaoLidas()
+    {
+        return $this->hasMany(Notificacao::class)->whereNull('lida_em')->latest();
+    }
 }

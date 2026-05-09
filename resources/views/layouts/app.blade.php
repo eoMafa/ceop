@@ -257,6 +257,97 @@
             <div class="page-header d-print-none">
                 <div class="container-fluid">
                     <div class="row g-2 align-items-center">
+
+                        {{-- Sino de notificações --}}
+                        <div class="col-auto">
+                            <div class="dropdown">
+                                <a href="#" class="btn btn-icon position-relative" data-bs-toggle="dropdown">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <path d="M10 5a2 2 0 0 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" />
+                                        <path d="M9 17v1a3 3 0 0 0 6 0v-1" />
+                                    </svg>
+                                    @php $totalNaoLidas = auth()->user()->notificacoesNaoLidas()->count(); @endphp
+                                    @if($totalNaoLidas > 0)
+                                        <span class="badge bg-danger badge-notification">{{ $totalNaoLidas > 99 ? '99+' : $totalNaoLidas }}</span>
+                                    @endif
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" style="width: 350px; max-height: 400px; overflow-y: auto;">
+                                    <div class="dropdown-header d-flex justify-content-between align-items-center">
+                                        <span>Notificações</span>
+                                        @if($totalNaoLidas > 0)
+                                            <form action="{{ route('notificacoes.ler-todas') }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" class="btn btn-sm btn-ghost-secondary">
+                                                    Marcar todas como lidas
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
+
+                                    @php
+                                        $notificacoesRecentes = auth()->user()->notificacoes()->limit(5)->get();
+                                    @endphp
+
+                                    @forelse($notificacoesRecentes as $notificacao)
+
+                                        <form action="{{ route('notificacoes.ler', $notificacao->id) }}"
+                                            method="POST"
+                                            class="m-0">
+
+                                            @csrf
+                                            @method('PATCH')
+
+                                            <button type="submit"
+                                                    class="dropdown-item border-0 bg-transparent w-100 text-start {{ !$notificacao->lida ? 'bg-light' : '' }}">
+
+                                                <div class="d-flex align-items-start py-2">
+
+                                                    <span class="me-2 mt-1">
+                                                        {{ $notificacao->icone_tipo }}
+                                                    </span>
+
+                                                    <div class="flex-fill">
+                                                        <div class="fw-bold" style="font-size:13px">
+                                                            {{ $notificacao->titulo }}
+                                                        </div>
+
+                                                        <div class="text-secondary" style="font-size:12px">
+                                                            {{ $notificacao->mensagem }}
+                                                        </div>
+
+                                                        <div class="text-secondary" style="font-size:11px">
+                                                            {{ $notificacao->created_at->diffForHumans() }}
+                                                        </div>
+                                                    </div>
+
+                                                    @if(!$notificacao->lida)
+                                                        <span class="badge bg-danger ms-1"
+                                                            style="width:8px;height:8px;border-radius:50%;padding:0">
+                                                        </span>
+                                                    @endif
+
+                                                </div>
+
+                                            </button>
+                                        </form>
+
+                                    @empty
+                                        <div class="dropdown-item text-center text-secondary py-3">
+                                            Nenhuma notificação
+                                        </div>
+                                    @endforelse
+
+                                    <div class="dropdown-divider"></div>
+                                    <a href="{{ route('notificacoes.index') }}" class="dropdown-item text-center text-primary">
+                                        Ver todas as notificações
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col">
                             <h2 class="page-title">@yield('title', 'Dashboard')</h2>
                             @hasSection('breadcrumb')

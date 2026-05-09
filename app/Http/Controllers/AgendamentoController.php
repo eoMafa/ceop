@@ -7,6 +7,7 @@ use App\Models\Orcamento;
 use App\Models\Paciente;
 use App\Models\Procedimento;
 use App\Models\User;
+use App\Services\NotificacaoService;
 use Illuminate\Http\Request;
 
 class AgendamentoController extends Controller
@@ -101,7 +102,10 @@ class AgendamentoController extends Controller
             $validated['data_hora_inicio'] . ' + ' . $procedimento->duracao_padrao_minutos . ' minutes'
         ));
 
-        Agendamento::create($validated);
+        $agendamento = Agendamento::create($validated);
+        $agendamento->load(['paciente', 'dentista']);
+        NotificacaoService::novoAgendamento($agendamento);
+
 
         return redirect()->route('agendamentos.index')
             ->with('success', 'Agendamento criado com sucesso!');
@@ -155,6 +159,8 @@ class AgendamentoController extends Controller
 
     public function destroy(Agendamento $agendamento)
     {
+        $agendamento->load(['paciente', 'dentista']);
+        NotificacaoService::agendamentoCancelado($agendamento);
         $agendamento->delete();
 
         return redirect()->route('agendamentos.index')

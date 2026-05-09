@@ -6,6 +6,7 @@ use App\Http\Controllers\ConvenioController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EvolucaoController;
 use App\Http\Controllers\FornecedorController;
+use App\Http\Controllers\NotificacaoController;
 use App\Http\Controllers\OrcamentoController;
 use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\PagamentoController;
@@ -28,6 +29,14 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 
 Route::get('/register', function () {
     return redirect()->route('login');
+});
+
+Route::middleware('auth')->prefix('notificacoes')->name('notificacoes.')->group(function () {
+    Route::get('/', [NotificacaoController::class, 'index'])->name('index');
+    Route::get('/count', [NotificacaoController::class, 'count'])->name('count');
+    Route::patch('/{notificacao}/ler', [NotificacaoController::class, 'marcarLida'])->name('ler');
+    Route::patch('/ler-todas', [NotificacaoController::class, 'marcarTodasLidas'])->name('ler-todas');
+    Route::delete('/{notificacao}', [NotificacaoController::class, 'destroy'])->name('destroy');
 });
 
 Route::middleware('auth')->group(function () {
