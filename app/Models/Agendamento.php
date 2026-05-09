@@ -14,9 +14,11 @@ class Agendamento extends Model
         'paciente_id',
         'dentista_id',
         'procedimento_id',
+        'orcamento_id',
         'data_hora_inicio',
         'data_hora_fim',
         'status',
+        'tipo',
         'observacoes'
     ];
 
@@ -43,6 +45,16 @@ class Agendamento extends Model
         return $this->belongsTo(Procedimento::class);
     }
 
+    public function orcamento()
+    {
+        return $this->belongsTo(Orcamento::class);
+    }
+
+    public function evolucoes()
+    {
+        return $this->hasMany(Evolucao::class);
+    }
+
     public function getCorStatusAttribute(): string
     {
         return match ($this->status) {
@@ -52,6 +64,17 @@ class Agendamento extends Model
             'concluido' => '#667eea',
             'falta' => '#ed8936',
             default => '#a0aec0',
+        };
+    }
+
+    public function getCorTipoAttribute(): string
+    {
+        return match($this->tipo) {
+            'orcamento'  => '#ed8936',
+            'consulta'   => '#4299e1',
+            'retorno'    => '#48bb78',
+            'avaliacao'  => '#667eea',
+            default      => '#a0aec0',
         };
     }
 }

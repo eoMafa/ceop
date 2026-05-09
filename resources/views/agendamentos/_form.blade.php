@@ -55,6 +55,21 @@
                 @enderror
             </div>
 
+            <div class="col-md-6" id="campo-orcamento">
+                <label class="form-label">Orçamento Vinculado</label>
+                <select name="orcamento_id" id="orcamento_id" class="form-select">
+                    <option value="">Nenhum</option>
+                    @if(isset($agendamento) && $agendamento->paciente_id)
+                        @foreach(App\Models\Orcamento::where('paciente_id', $agendamento->paciente_id)->where('status', 'aprovado')->get() as $orc)
+                            <option value="{{ $orc->id }}"
+                                {{ old('orcamento_id', $orcamento_id ?? $agendamento->orcamento_id ?? '') == $orc->id ? 'selected' : '' }}>
+                                #{{ $orc->id }} — R$ {{ number_format($orc->total_liquido, 2, ',', '.') }}
+                            </option>
+                        @endforeach
+                    @endif
+                </select>
+            </div>
+
             <div class="col-md-3">
                 <label class="form-label required">Data e Hora</label>
                 <input type="datetime-local" name="data_hora_inicio" id="data_hora_inicio"
@@ -83,6 +98,27 @@
                 @error('status')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label required">Tipo</label>
+                <select name="tipo" id="tipo" class="form-select @error('tipo') is-invalid @enderror">
+                    <option value="avaliacao" {{ old('tipo', $agendamento->tipo ?? '') == 'avaliacao' ? 'selected' : '' }}>Avaliação</option>
+                    <option value="orcamento" {{ old('tipo', $agendamento->tipo ?? '') == 'orcamento' ? 'selected' : '' }}>Orçamento</option>
+                    <option value="consulta" {{ old('tipo', $agendamento->tipo ?? '') == 'consulta' ? 'selected' : '' }}>Consulta</option>
+                    <option value="retorno" {{ old('tipo', $agendamento->tipo ?? '') == 'retorno' ? 'selected' : '' }}>Retorno</option>
+                </select>
+                @error('tipo')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            {{-- Orçamento vinculado — aparece só quando tipo = consulta --}}
+            <div class="col-md-6" id="campo-orcamento" style="{{ old('tipo', $agendamento->tipo ?? '') == 'consulta' ? '' : 'display:none' }}">
+                <label class="form-label">Orçamento Vinculado</label>
+                <select name="orcamento_id" id="orcamento_id" class="form-select">
+                    <option value="">Nenhum</option>
+                </select>
             </div>
 
             <div class="col-12">
@@ -124,5 +160,22 @@
 
     // Dispara ao carregar para preencher duração no edit
     document.getElementById('procedimento_id').dispatchEvent(new Event('change'));
+
+    document.getElementById('paciente_id').addEventListener('change', function () {
+        const pacienteId = this.value;
+        const select = document.getElementById('orcamento_id');
+
+        select.innerHTML = '<option value="">Nenhum</option>';
+
+        if (!pacienteId) return;
+
+        fetch(`/evolucoes/orcamentos-por-paciente?paciente_id=${pacienteId}`)
+            .then(r => r.json())
+            .then(data => {
+                data.forEach(orc => {
+                    select.innerHTML += `<option value="${orc.id}">#${orc.id} — R$ ${parseFloat(orc.total_liquido).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</option>`;
+                });
+            });
+    });
 </script>
 @endpush

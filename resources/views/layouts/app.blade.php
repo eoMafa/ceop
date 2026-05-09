@@ -104,6 +104,26 @@
                             </li>
                         @endif
 
+                        {{-- Consultas --}}
+                        @if(auth()->user()->podeVer('prontuario'))
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('evolucoes.*') ? 'active' : '' }}"
+                                    href="{{ route('evolucoes.index') }}">
+                                    <span class="nav-link-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2" />
+                                            <rect x="9" y="3" width="6" height="4" rx="2" />
+                                            <line x1="9" y1="12" x2="15" y2="12" />
+                                            <line x1="9" y1="16" x2="11" y2="16" />
+                                        </svg>
+                                    </span>
+                                    <span class="nav-link-title">Consultas</span>
+                                </a>
+                            </li>
+                        @endif
+
                         {{-- Financeiro --}}
                         @if(auth()->user()->podeVer('financeiro'))
                             <li class="nav-item dropdown">

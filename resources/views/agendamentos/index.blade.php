@@ -37,11 +37,19 @@
                 <div class="col-auto ms-auto">
                     {{-- Legenda --}}
                     <div class="d-flex gap-2 flex-wrap">
+                        {{-- Status --}}
                         <span class="badge text-white" style="background:#4299e1">Agendado</span>
                         <span class="badge text-white" style="background:#48bb78">Confirmado</span>
                         <span class="badge text-white" style="background:#f56565">Cancelado</span>
                         <span class="badge text-white" style="background:#667eea">Concluído</span>
                         <span class="badge text-white" style="background:#ed8936">Falta</span>
+                        <span class="ms-2 text-secondary">|</span>
+                        {{-- Tipos (borda) --}}
+                        <span class="text-secondary small">Borda: </span>
+                        <span class="badge text-white" style="background:#ed8936">Orçamento</span>
+                        <span class="badge text-white" style="background:#4299e1">Consulta</span>
+                        <span class="badge text-white" style="background:#48bb78">Retorno</span>
+                        <span class="badge text-white" style="background:#667eea">Avaliação</span>
                     </div>
                 </div>
             </div>
@@ -79,6 +87,9 @@
                         <dt class="col-sm-4">Procedimento</dt>
                         <dd class="col-sm-8" id="modal-procedimento"></dd>
 
+                        <dt class="col-sm-4">Tipo</dt>
+                        <dd class="col-sm-8" id="modal-tipo"></dd>
+
                         <dt class="col-sm-4">Status</dt>
                         <dd class="col-sm-8" id="modal-status"></dd>
 
@@ -87,8 +98,11 @@
                     </dl>
                 </div>
                 <div class="modal-footer">
+                    <a href="#" id="modal-btn-ver" class="btn btn-secondary">Ver</a>
                     <a href="#" id="modal-btn-editar" class="btn btn-primary">Editar</a>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <a href="#" id="modal-btn-orcamento" class="btn btn-warning" style="display:none">💰 Criar Orçamento</a>
+                    <a href="#" id="modal-btn-evolucao" class="btn btn-success" style="display:none">📋 Registrar Consulta</a>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>
                 </div>
             </div>
         </div>
@@ -130,17 +144,41 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         // Clique em evento — abre modal
         eventClick: function (info) {
+            info.jsEvent.preventDefault();
             const props = info.event.extendedProps;
             const id = info.event.id;
 
-            document.getElementById('modal-paciente').textContent = props.paciente;
-            document.getElementById('modal-dentista').textContent = props.dentista;
+            document.getElementById('modal-paciente').textContent    = props.paciente;
+            document.getElementById('modal-dentista').textContent    = props.dentista;
             document.getElementById('modal-procedimento').textContent = props.procedimento;
-            document.getElementById('modal-status').textContent = props.status;
+            document.getElementById('modal-status').textContent      = props.status;
+            document.getElementById('modal-tipo').textContent        = props.tipo;
             document.getElementById('modal-observacoes').textContent = props.observacoes || '—';
-            document.getElementById('modal-btn-editar').href = `/agendamentos/${id}/edit`;
+            document.getElementById('modal-btn-ver').href            = `/agendamentos/${id}`;
+            document.getElementById('modal-btn-editar').href         = `/agendamentos/${id}/edit`;
 
-            const modal = new bootstrap.Modal(document.getElementById('modal-agendamento'));
+            // Botão de criar orçamento — aparece só para tipo orcamento
+            const btnOrcamento = document.getElementById('modal-btn-orcamento');
+            if (props.tipo === 'orcamento' && props.status !== 'concluido') {
+                btnOrcamento.href = `/orcamentos/create?paciente_id=${props.paciente_id}&agendamento_id=${id}`;
+                btnOrcamento.style.display = '';
+            } else {
+                btnOrcamento.style.display = 'none';
+            }
+
+            // Botão de registrar consulta — aparece para tipo consulta não concluído
+            const btnEvolucao = document.getElementById('modal-btn-evolucao');
+            if (['consulta', 'retorno', 'avaliacao'].includes(props.tipo) && props.status !== 'concluido') {
+                btnEvolucao.href = `/evolucoes/create?agendamento_id=${id}`;
+                btnEvolucao.style.display = '';
+            } else {
+                btnEvolucao.style.display = 'none';
+            }
+
+            const modal = new bootstrap.Modal(
+                document.getElementById('modal-agendamento')
+            );
+
             modal.show();
         },
         // Clique em data vazia — abre criar agendamento

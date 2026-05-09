@@ -8,6 +8,12 @@
 @endsection
 
 @section('actions')
+    @if(!in_array($agendamento->status, ['concluido', 'cancelado']))
+        <a href="{{ route('evolucoes.create', ['agendamento_id' => $agendamento->id]) }}"
+            class="btn btn-success">
+            📋 Registrar Consulta
+        </a>
+    @endif
     <a href="{{ route('agendamentos.edit', $agendamento->id) }}" class="btn btn-primary">Editar</a>
     <a href="{{ route('agendamentos.index') }}" class="btn btn-secondary">Voltar</a>
 @endsection
@@ -54,5 +60,36 @@
                 <dd class="col-sm-9">{{ $agendamento->observacoes ?? '—' }}</dd>
             </dl>
         </div>
+        {{-- Evoluções vinculadas --}}
+        @if($agendamento->evolucoes->count() > 0)
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h3 class="card-title">Consultas Registradas</h3>
+                </div>
+                <table class="table table-vcenter">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Dentista</th>
+                            <th>Procedimento</th>
+                            <th class="w-1"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($agendamento->evolucoes as $evolucao)
+                            <tr>
+                                <td>{{ $evolucao->created_at->format('d/m/Y H:i') }}</td>
+                                <td>{{ $evolucao->dentista->name }}</td>
+                                <td>{{ $evolucao->procedimento->nome ?? '—' }}</td>
+                                <td>
+                                    <a href="{{ route('evolucoes.show', $evolucao->id) }}"
+                                        class="btn btn-sm btn-secondary">Ver</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
     </div>
 @endsection

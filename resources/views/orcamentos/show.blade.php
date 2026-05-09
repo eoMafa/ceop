@@ -8,6 +8,22 @@
 @endsection
 
 @section('actions')
+    @if($orcamento->status === 'aprovado')
+        <a href="{{ route('agendamentos.create', [
+                'orcamento_id' => $orcamento->id,
+                'paciente_id'  => $orcamento->paciente_id
+            ]) }}"
+            class="btn btn-primary">
+            📅 Agendar Consulta
+        </a>
+        <a href="{{ route('pagamentos.create', [
+                'orcamento_id' => $orcamento->id,
+                'paciente_id'  => $orcamento->paciente_id
+            ]) }}"
+            class="btn btn-success">
+            💰 Gerar Pagamento
+        </a>
+    @endif
     @if($orcamento->status === 'rascunho')
         <a href="{{ route('orcamentos.edit', $orcamento->id) }}" class="btn btn-secondary">Editar</a>
     @endif

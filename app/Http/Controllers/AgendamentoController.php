@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Agendamento;
+use App\Models\Orcamento;
 use App\Models\Paciente;
 use App\Models\Procedimento;
 use App\Models\User;
@@ -44,11 +45,14 @@ class AgendamentoController extends Controller
                 'backgroundColor'   => $a->cor_status,
                 'borderColor'       => $a->cor_status,
                 'extendedProps'     => [
-                    'paciente'      => $a->paciente->nome,
-                    'dentista'      => $a->dentista->name,
-                    'procedimento'  => $a->procedimento->nome,
-                    'status'        => $a->status,
-                    'observacoes'   => $a->observacoes,
+                    'paciente'     => $a->paciente->nome,
+                    'paciente_id'  => $a->paciente_id,
+                    'dentista'     => $a->dentista->name,
+                    'procedimento' => $a->procedimento->nome,
+                    'status'       => $a->status,
+                    'tipo'         => $a->tipo,
+                    'orcamento_id' => $a->orcamento_id,
+                    'observacoes'  => $a->observacoes,
                 ],
             ])
         );
@@ -56,13 +60,26 @@ class AgendamentoController extends Controller
 
     public function create(Request $request)
     {
-        $pacientes    = Paciente::orderBy('nome')->get();
-        $dentistas    = User::where('role', 'dentista')->where('ativo', true)->orderBy('name')->get();
+        $pacientes     = Paciente::orderBy('nome')->get();
+        $dentistas     = User::where('role', 'dentista')->where('ativo', true)->orderBy('name')->get();
         $procedimentos = Procedimento::orderBy('nome')->get();
+
+        $paciente_id = $request->input('paciente_id');
+        $orcamento_id = $request->input('orcamento_id');
+
+        $orcamentos = $paciente_id
+            ? Orcamento::where('paciente_id', $paciente_id)
+                ->where('status', 'aprovado')
+                ->orderByDesc('created_at')
+                ->get()
+            : collect();
 
         $data_hora = $request->input('data_hora');
 
-        return view('agendamentos.create', compact('pacientes', 'dentistas', 'procedimentos', 'data_hora'));
+        return view('agendamentos.create', compact(
+            'pacientes', 'dentistas', 'procedimentos',
+            'orcamentos', 'paciente_id', 'orcamento_id', 'data_hora'
+        ));
     }
 
     public function store(Request $request)
@@ -71,7 +88,9 @@ class AgendamentoController extends Controller
             'paciente_id'     => 'required|exists:pacientes,id',
             'dentista_id'     => 'required|exists:users,id',
             'procedimento_id' => 'required|exists:procedimentos,id',
+            'orcamento_id'    => 'nullable|exists:orcamentos,id',
             'data_hora_inicio'=> 'required|date',
+            'tipo'            => 'required|in:orcamento,consulta,retorno,avaliacao',
             'status'          => 'required|in:agendado,confirmado,cancelado,concluido,falta',
             'observacoes'     => 'nullable|string',
         ]);
@@ -90,7 +109,14 @@ class AgendamentoController extends Controller
 
     public function show(Agendamento $agendamento)
     {
-        $agendamento->load(['paciente', 'dentista', 'procedimento']);
+        $agendamento->load([
+            'paciente',
+            'dentista',
+            'procedimento',
+            'orcamento',
+            'evolucoes.dentista',
+            'evolucoes.procedimento',
+        ]);
         return view('agendamentos.show', compact('agendamento'));
     }
 
@@ -109,7 +135,9 @@ class AgendamentoController extends Controller
             'paciente_id'     => 'required|exists:pacientes,id',
             'dentista_id'     => 'required|exists:users,id',
             'procedimento_id' => 'required|exists:procedimentos,id',
+            'orcamento_id'    => 'nullable|exists:orcamentos,id',
             'data_hora_inicio'=> 'required|date',
+            'tipo'            => 'required|in:orcamento,consulta,retorno,avaliacao',
             'status'          => 'required|in:agendado,confirmado,cancelado,concluido,falta',
             'observacoes'     => 'nullable|string',
         ]);

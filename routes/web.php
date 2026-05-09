@@ -4,6 +4,7 @@ use App\Http\Controllers\AgendamentoController;
 use App\Http\Controllers\CategoriaEstoqueController;
 use App\Http\Controllers\ConvenioController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EvolucaoController;
 use App\Http\Controllers\FornecedorController;
 use App\Http\Controllers\OrcamentoController;
 use App\Http\Controllers\PacienteController;
@@ -132,6 +133,13 @@ Route::middleware('auth')->group(function () {
         'destroy' => 'permission:financeiro.deletar',
     ]);
     Route::get('orcamentos/{orcamento}', [OrcamentoController::class, 'show'])->name('orcamentos.show')->middleware('permission:financeiro.ver');
+
+    //Evoluções
+    Route::get('evolucoes/orcamentos-por-paciente', [EvolucaoController::class, 'orcamentosPorPaciente'])->name('evolucoes.orcamentos-por-paciente');
+    Route::delete('evolucoes/arquivos/{arquivo}', [EvolucaoController::class, 'destroyArquivo'])->name('evolucoes.arquivos.destroy');
+    Route::resource('evolucoes', EvolucaoController::class)->parameters([
+            'evolucoes' => 'evolucao'
+        ])->only(['index', 'show', 'create', 'store', 'edit', 'update']);
 
     // Pagamentos
     Route::patch('parcelas/{parcela}/baixar', [PagamentoController::class, 'baixarParcela'])->name('parcelas.baixar')->middleware('permission:financeiro.editar');

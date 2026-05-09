@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Agendamento;
 use App\Models\Convenio;
 use App\Models\Orcamento;
 use App\Models\OrcamentoItem;
@@ -71,6 +72,14 @@ class OrcamentoController extends Controller
 
         $orcamento->load(['itens', 'convenio']);
         $orcamento->calcularTotais();
+
+        // Se vier de um agendamento, vincula e marca como concluído
+        if ($request->filled('agendamento_id')) {
+            $agendamento = Agendamento::find($request->agendamento_id);
+            if ($agendamento) {
+                $agendamento->update(['status' => 'concluido']);
+            }
+        }
 
         return redirect()->route('orcamentos.show', $orcamento->id)
             ->with('success', 'Orçamento criado com sucesso!');
