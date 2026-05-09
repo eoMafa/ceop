@@ -221,6 +221,25 @@
                             </li>
                         @endif
 
+                        @if(auth()->user()->podeVer('usuarios'))
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('logs.*') ? 'active' : '' }}"
+                                    href="{{ route('logs.index') }}">
+                                    <span class="nav-link-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2" />
+                                            <rect x="9" y="3" width="6" height="4" rx="2" />
+                                            <path d="M9 12h6" />
+                                            <path d="M9 16h6" />
+                                        </svg>
+                                    </span>
+                                    <span class="nav-link-title">Logs</span>
+                                </a>
+                            </li>
+                        @endif
+
                     </ul>
 
                     <div class="mt-auto pb-3">
@@ -388,6 +407,86 @@
 
         </div>
     </div>
+    {{-- Aviso de timeout de sessão --}}
+    <div class="modal modal-blur fade" id="modal-timeout" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">⚠️ Sessão expirando</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Sua sessão vai expirar em <strong id="countdown">5:00</strong> minutos por inatividade.</p>
+                    <p class="text-secondary mb-0">Clique em continuar para permanecer conectado.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary w-100" id="btn-continuar">
+                        Continuar conectado
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        const TIMEOUT_MINUTOS = 120;
+        const AVISO_MINUTOS   = 5; // avisa 5 minutos antes
+        const AVISO_MS        = (TIMEOUT_MINUTOS - AVISO_MINUTOS) * 60 * 1000;
+        const COUNTDOWN_MS    = AVISO_MINUTOS * 60 * 1000;
+
+        let countdownInterval;
+        let timeoutTimer;
+        let avisoTimer;
+
+        function resetTimers() {
+            clearTimeout(avisoTimer);
+            clearTimeout(timeoutTimer);
+            clearInterval(countdownInterval);
+
+            // Inicia timer para mostrar aviso
+            avisoTimer = setTimeout(mostrarAviso, AVISO_MS);
+
+            // Inicia timer para logout automático
+            timeoutTimer = setTimeout(function () {
+                window.location.href = '{{ route("login") }}';
+            }, TIMEOUT_MINUTOS * 60 * 1000);
+        }
+
+        function mostrarAviso() {
+            const modal = bootstrap.Modal.getOrCreate(document.getElementById('modal-timeout'));
+            modal.show();
+
+            let segundosRestantes = AVISO_MINUTOS * 60;
+
+            countdownInterval = setInterval(function () {
+                segundosRestantes--;
+                const mins = Math.floor(segundosRestantes / 60);
+                const secs = segundosRestantes % 60;
+                document.getElementById('countdown').textContent =
+                    `${mins}:${secs.toString().padStart(2, '0')}`;
+
+                if (segundosRestantes <= 0) {
+                    clearInterval(countdownInterval);
+                }
+            }, 1000);
+        }
+
+        // Continuar conectado — faz ping no servidor
+        document.getElementById('btn-continuar').addEventListener('click', function () {
+            fetch('{{ route("dashboard") }}', { method: 'HEAD' });
+            bootstrap.Modal.getInstance(document.getElementById('modal-timeout'))?.hide();
+            resetTimers();
+        });
+
+        // Reseta timers em qualquer atividade do usuário
+        ['click', 'keypress', 'mousemove', 'scroll'].forEach(function (evento) {
+            document.addEventListener(evento, resetTimers, { passive: true });
+        });
+
+        // Inicia
+        resetTimers();
+    })();
+    </script>
     <script>
         window.sessionSuccess = @json(session('success'));
         window.sessionError = @json(session('error'));

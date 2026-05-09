@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Paciente;
 use App\Rules\CpfCnpjValido;
+use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
 
 class PacienteController extends Controller
@@ -49,7 +50,8 @@ class PacienteController extends Controller
             'observacoes'     => 'nullable|string',
         ]);
     
-        Paciente::create($validated);
+        $paciente = Paciente::create($validated);
+        ActivityLogService::criou('pacientes', "Cadastrou o paciente {$paciente->nome}", $paciente);
 
         return redirect()->route('pacientes.index')
             ->with('success', 'Paciente cadastrado com sucesso!');
@@ -94,7 +96,9 @@ class PacienteController extends Controller
             'observacoes'     => 'nullable|string',
         ]);
 
+        $dadosAnteriores = $paciente->toArray();
         $paciente->update($validated);
+        ActivityLogService::editou('pacientes', "Editou o paciente {$paciente->nome}", $paciente, $dadosAnteriores);
 
         return redirect()->route('pacientes.index')
             ->with('success', 'Paciente atualizado com sucesso!');
@@ -106,6 +110,7 @@ class PacienteController extends Controller
     public function destroy(Paciente $paciente)
     {
         $paciente->delete(); // SoftDelete automático
+        ActivityLogService::deletou('pacientes', "Inativou o paciente {$paciente->nome}", $paciente);
 
         return redirect()->route('pacientes.index')
             ->with('success', 'Paciente removido com sucesso!');

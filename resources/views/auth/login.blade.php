@@ -19,10 +19,19 @@
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
 
+                    @if(session('error'))
+                        <div class="alert alert-danger mb-3">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
                     <div class="mb-3">
                         <label class="form-label required">E-mail</label>
-                        <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
-                            value="{{ old('email') }}" placeholder="seu@email.com" autofocus>
+                        <input type="email" name="email"
+                            class="form-control @error('email') is-invalid @enderror"
+                            value="{{ old('email') }}"
+                            placeholder="seu@email.com"
+                            autofocus>
                         @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror

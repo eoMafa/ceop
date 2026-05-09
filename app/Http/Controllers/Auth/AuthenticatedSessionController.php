@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use App\Services\ActivityLogService;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -27,6 +28,7 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+        ActivityLogService::login("Login realizado: {$request->email}");
 
         return redirect()->intended(route('dashboard', absolute: false));
     }
@@ -36,6 +38,11 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        // Salva o email antes de deslogar
+        $email = auth()->user()->email;
+
+        ActivityLogService::logout("Logout realizado: {$email}");
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();

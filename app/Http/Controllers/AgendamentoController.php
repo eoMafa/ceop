@@ -7,6 +7,7 @@ use App\Models\Orcamento;
 use App\Models\Paciente;
 use App\Models\Procedimento;
 use App\Models\User;
+use App\Services\ActivityLogService;
 use App\Services\NotificacaoService;
 use Illuminate\Http\Request;
 
@@ -103,6 +104,7 @@ class AgendamentoController extends Controller
         ));
 
         $agendamento = Agendamento::create($validated);
+        ActivityLogService::criou('agendamentos', "Criou agendamento para {$agendamento->paciente->nome}", $agendamento);
         $agendamento->load(['paciente', 'dentista']);
         NotificacaoService::novoAgendamento($agendamento);
 
@@ -151,7 +153,10 @@ class AgendamentoController extends Controller
             $validated['data_hora_inicio'] . ' + ' . $procedimento->duracao_padrao_minutos . ' minutes'
         ));
 
+        $dadosAnteriores = $agendamento->toArray();
         $agendamento->update($validated);
+        ActivityLogService::editou('agendamentos', "Editou agendamento #{$agendamento->id}", $agendamento, $dadosAnteriores);
+
 
         return redirect()->route('agendamentos.index')
             ->with('success', 'Agendamento atualizado com sucesso!');
@@ -162,6 +167,7 @@ class AgendamentoController extends Controller
         $agendamento->load(['paciente', 'dentista']);
         NotificacaoService::agendamentoCancelado($agendamento);
         $agendamento->delete();
+        ActivityLogService::deletou('agendamentos', "Cancelou agendamento #{$agendamento->id}", $agendamento);
 
         return redirect()->route('agendamentos.index')
             ->with('success', 'Agendamento cancelado com sucesso!');

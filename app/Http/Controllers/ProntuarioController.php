@@ -7,6 +7,7 @@ use App\Models\EvolucaoArquivo;
 use App\Models\Paciente;
 use App\Models\Prontuario;
 use App\Models\User;
+use App\Rules\ArquivoSeguro;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -66,7 +67,7 @@ class ProntuarioController extends Controller
             'dente'                => 'nullable|string|max:10',
             'face'                 => 'nullable|string|max:50',
             'descricao'            => 'required|string',
-            'arquivos.*'           => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,mp4,mov,avi,pdf|max:102400',
+            'arquivos.*'           => ['nullable', 'file', 'max:102400', new ArquivoSeguro],
             'materiais'            => 'nullable|array',
             'materiais.*.produto_id'  => 'required|exists:produtos,id',
             'materiais.*.quantidade'  => 'required|numeric|min:0.01',

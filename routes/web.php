@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AgendamentoController;
 use App\Http\Controllers\CategoriaEstoqueController;
 use App\Http\Controllers\ConvenioController;
@@ -37,6 +38,11 @@ Route::middleware('auth')->prefix('notificacoes')->name('notificacoes.')->group(
     Route::patch('/{notificacao}/ler', [NotificacaoController::class, 'marcarLida'])->name('ler');
     Route::patch('/ler-todas', [NotificacaoController::class, 'marcarTodasLidas'])->name('ler-todas');
     Route::delete('/{notificacao}', [NotificacaoController::class, 'destroy'])->name('destroy');
+});
+
+Route::middleware(['auth', 'permission:usuarios.ver'])->prefix('logs')->name('logs.')->group(function () {
+    Route::get('/', [ActivityLogController::class, 'index'])->name('index');
+    Route::get('/{log}', [ActivityLogController::class, 'show'])->name('show');
 });
 
 Route::middleware('auth')->group(function () {

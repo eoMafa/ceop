@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Rules\SenhaForte;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
@@ -35,7 +36,7 @@ class UsuarioController extends Controller
         $validated = $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users|max:255',
-            'password' => ['required', 'confirmed', Password::min(8)],
+            'password' => ['required', 'confirmed', new SenhaForte],
             'role'     => 'required|in:admin,dentista,recepcionista',
             'cro'      => 'nullable|string|max:20',
             'telefone' => 'nullable|string|max:20',
@@ -101,7 +102,7 @@ class UsuarioController extends Controller
     public function updatePassword(Request $request, User $usuario)
     {
         $request->validate([
-            'password' => ['required', 'confirmed', Password::min(8)],
+            'password' => ['required', 'confirmed', new SenhaForte],
         ]);
 
         $usuario->update([

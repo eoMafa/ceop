@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('activity_logs', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->string('acao'); // ex: criou, editou, deletou
+            $table->string('modulo'); // ex: pacientes, agendamentos
+            $table->string('descricao');
+            $table->morphs('loggable'); // polimórfico — registra qualquer model
+            $table->json('dados_anteriores')->nullable(); // estado antes
+            $table->json('dados_novos')->nullable(); // estado depois
+            $table->string('ip')->nullable();
+            $table->string('user_agent')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('activity_logs');
+    }
+};
