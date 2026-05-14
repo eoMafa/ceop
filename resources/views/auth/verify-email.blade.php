@@ -9,7 +9,7 @@
 <body class="antialiased d-flex align-items-center min-vh-100 bg-secondary-lt">
     <div class="container-tight py-4">
         <div class="text-center mb-4">
-            <h1 class="navbar-brand-text">🦷 {{ config('app.name') }}</h1>
+            <h1 class="navbar-brand-text"> {{ config('app.name') }}</h1>
         </div>
 
         <div class="card card-md">

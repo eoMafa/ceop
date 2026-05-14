@@ -4,78 +4,120 @@
 
 @section('content')
 
+    {{-- Boas vindas --}}
+    <div class="row mb-3">
+        <div class="col">
+            <div class="card" style="background: linear-gradient(135deg, #1a0a0a 0%, #2c1010 100%); border: 1px solid #3a1a1a;">
+                <div class="card-body py-3">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <h3 class="mb-1 text-white">
+                                Olá, {{ Auth::user()->name }}! 👋
+                            </h3>
+                            <p class="mb-0" style="color:#888">
+                                {{ now()->translatedFormat('l, d \d\e F \d\e Y') }} —
+                                Bem-vindo ao sistema CEOP
+                            </p>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- Cards de resumo --}}
     <div class="row g-3 mb-3">
 
-        {{-- Pacientes --}}
         <div class="col-sm-6 col-lg-3">
             <div class="card">
                 <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="subheader">Total de Pacientes</div>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-3" style="width:48px;height:48px;border-radius:12px;background:rgba(192,57,43,0.15);display:flex;align-items:center;justify-content:center;font-size:1.5rem">
+                            👥
+                        </div>
+                        <div class="text-secondary">Total de Pacientes</div>
                     </div>
                     <div class="h1 mb-1">{{ $totalPacientes }}</div>
-                    <div class="text-secondary">
-                        <span class="text-success">+{{ $pacientesNoMes }}</span> este mês
+                    <div class="text-secondary small">
+                        <span class="text-success fw-bold">+{{ $pacientesNoMes }}</span> este mês
                     </div>
                 </div>
+                <div style="height:4px;background:linear-gradient(90deg,#c0392b,#e74c3c);border-radius:0 0 4px 4px"></div>
             </div>
         </div>
 
-        {{-- Agendamentos hoje --}}
         <div class="col-sm-6 col-lg-3">
             <div class="card">
                 <div class="card-body">
-                    <div class="subheader">Agendamentos Hoje</div>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-3" style="width:48px;height:48px;border-radius:12px;background:rgba(66,153,225,0.15);display:flex;align-items:center;justify-content:center;font-size:1.5rem">
+                            📅
+                        </div>
+                        <div class="text-secondary">Agendamentos Hoje</div>
+                    </div>
                     <div class="h1 mb-1">{{ $agendamentosHoje->count() }}</div>
-                    <div class="text-secondary">
-                        {{ $agendamentosSemana }} na semana
+                    <div class="text-secondary small">
+                        <span class="fw-bold">{{ $agendamentosSemana }}</span> na semana
                     </div>
                 </div>
+                <div style="height:4px;background:linear-gradient(90deg,#4299e1,#63b3ed);border-radius:0 0 4px 4px"></div>
             </div>
         </div>
 
-        {{-- Receita do mês --}}
         <div class="col-sm-6 col-lg-3">
             <div class="card">
                 <div class="card-body">
-                    <div class="subheader">Receita do Mês</div>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-3" style="width:48px;height:48px;border-radius:12px;background:rgba(72,187,120,0.15);display:flex;align-items:center;justify-content:center;font-size:1.5rem">
+                            💰
+                        </div>
+                        <div class="text-secondary">Receita do Mês</div>
+                    </div>
                     <div class="h1 mb-1">R$ {{ number_format($receitaMes, 2, ',', '.') }}</div>
-                    <div class="text-secondary">
+                    <div class="text-secondary small">
                         @if($parcelasVencendoHoje > 0)
-                            <span class="text-warning">{{ $parcelasVencendoHoje }} vencendo hoje</span>
+                            <span class="text-warning fw-bold">{{ $parcelasVencendoHoje }} vencendo hoje</span>
                         @else
                             Nenhum vencimento hoje
                         @endif
                     </div>
                 </div>
+                <div style="height:4px;background:linear-gradient(90deg,#48bb78,#68d391);border-radius:0 0 4px 4px"></div>
             </div>
         </div>
 
-        {{-- Parcelas vencidas --}}
         <div class="col-sm-6 col-lg-3">
             <div class="card {{ $parcelasPendentes > 0 ? 'border-danger' : '' }}">
                 <div class="card-body">
-                    <div class="subheader">Parcelas Vencidas</div>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-3" style="width:48px;height:48px;border-radius:12px;background:rgba(245,101,101,0.15);display:flex;align-items:center;justify-content:center;font-size:1.5rem">
+                            ⚠️
+                        </div>
+                        <div class="text-secondary">Parcelas Vencidas</div>
+                    </div>
                     <div class="h1 mb-1 {{ $parcelasPendentes > 0 ? 'text-danger' : '' }}">
                         {{ $parcelasPendentes }}
                     </div>
-                    <div class="text-secondary">
+                    <div class="text-secondary small">
                         R$ {{ number_format($totalPendente, 2, ',', '.') }} em aberto
                     </div>
                 </div>
+                <div style="height:4px;background:linear-gradient(90deg,#f56565,#fc8181);border-radius:0 0 4px 4px"></div>
             </div>
         </div>
 
     </div>
 
+    {{-- Gráficos --}}
     <div class="row g-3 mb-3">
 
-        {{-- Gráfico agendamentos --}}
         <div class="col-md-6">
-            <div class="card">
+            <div class="card h-100">
                 <div class="card-header">
-                    <h3 class="card-title">Agendamentos por Mês</h3>
+                    <h3 class="card-title">
+                        📊 Agendamentos por Mês
+                    </h3>
                 </div>
                 <div class="card-body">
                     <canvas id="grafico-agendamentos" height="120"></canvas>
@@ -83,11 +125,12 @@
             </div>
         </div>
 
-        {{-- Gráfico receita --}}
         <div class="col-md-6">
-            <div class="card">
+            <div class="card h-100">
                 <div class="card-header">
-                    <h3 class="card-title">Receita por Mês</h3>
+                    <h3 class="card-title">
+                        💹 Receita por Mês
+                    </h3>
                 </div>
                 <div class="card-body">
                     <canvas id="grafico-receita" height="120"></canvas>
@@ -99,44 +142,53 @@
 
     <div class="row g-3">
 
-        {{-- Agendamentos hoje --}}
+        {{-- Agenda de hoje --}}
         <div class="col-md-6">
-            <div class="card">
+            <div class="card h-100">
                 <div class="card-header">
-                    <h3 class="card-title">Agenda de Hoje</h3>
+                    <h3 class="card-title">📅 Agenda de Hoje</h3>
                     <span class="ms-auto">
-                        <a href="{{ route('agendamentos.index') }}" class="btn btn-sm btn-secondary">Ver calendário</a>
+                        <a href="{{ route('agendamentos.index') }}" class="btn btn-sm btn-secondary">
+                            Ver calendário
+                        </a>
                     </span>
                 </div>
                 <div class="card-body p-0">
                     @forelse($agendamentosHoje as $agendamento)
                         @php
                             $cores = [
-                                'agendado'   => 'bg-blue',
-                                'confirmado' => 'bg-success',
-                                'cancelado'  => 'bg-danger',
-                                'concluido'  => 'bg-purple',
-                                'falta'      => 'bg-warning',
+                                'agendado'   => '#4299e1',
+                                'confirmado' => '#48bb78',
+                                'cancelado'  => '#f56565',
+                                'concluido'  => '#667eea',
+                                'falta'      => '#ed8936',
                             ];
+                            $cor = $cores[$agendamento->status] ?? '#a0aec0';
                         @endphp
                         <div class="d-flex align-items-center p-3 border-bottom">
-                            <div class="me-3 text-center" style="min-width:50px">
-                                <div class="fw-bold">{{ $agendamento->data_hora_inicio->format('H:i') }}</div>
-                                <small class="text-secondary">{{ $agendamento->data_hora_fim->format('H:i') }}</small>
+                            <div class="me-3 text-center" style="min-width:55px">
+                                <div class="fw-bold" style="color:{{ $cor }}">
+                                    {{ $agendamento->data_hora_inicio->format('H:i') }}
+                                </div>
+                                <small class="text-secondary">
+                                    {{ $agendamento->data_hora_fim->format('H:i') }}
+                                </small>
                             </div>
+                            <div style="width:3px;height:40px;background:{{ $cor }};border-radius:2px;margin-right:12px"></div>
                             <div class="flex-fill">
                                 <div class="fw-bold">{{ $agendamento->paciente->nome }}</div>
                                 <small class="text-secondary">
                                     {{ $agendamento->procedimento->nome }} — {{ $agendamento->dentista->name }}
                                 </small>
                             </div>
-                            <span class="badge {{ $cores[$agendamento->status] }} text-white ms-2">
+                            <span class="badge text-white ms-2" style="background:{{ $cor }}">
                                 {{ ucfirst($agendamento->status) }}
                             </span>
                         </div>
                     @empty
-                        <div class="text-center text-secondary py-4">
-                            Nenhum agendamento para hoje.
+                        <div class="text-center text-secondary py-5">
+                            <div style="font-size:2rem">📭</div>
+                            <div class="mt-2">Nenhum agendamento para hoje</div>
                         </div>
                     @endforelse
                 </div>
@@ -148,15 +200,20 @@
             {{-- Próximos agendamentos --}}
             <div class="card mb-3">
                 <div class="card-header">
-                    <h3 class="card-title">Próximos Agendamentos</h3>
+                    <h3 class="card-title">🔜 Próximos Agendamentos</h3>
                 </div>
                 <div class="card-body p-0">
                     @forelse($proximosAgendamentos as $agendamento)
                         <div class="d-flex align-items-center p-3 border-bottom">
-                            <div class="me-3 text-center" style="min-width:60px">
-                                <div class="fw-bold">{{ $agendamento->data_hora_inicio->format('d/m') }}</div>
-                                <small class="text-secondary">{{ $agendamento->data_hora_inicio->format('H:i') }}</small>
+                            <div class="me-3 text-center" style="min-width:55px">
+                                <div class="fw-bold text-primary">
+                                    {{ $agendamento->data_hora_inicio->format('d/m') }}
+                                </div>
+                                <small class="text-secondary">
+                                    {{ $agendamento->data_hora_inicio->format('H:i') }}
+                                </small>
                             </div>
+                            <div style="width:3px;height:40px;background:#4299e1;border-radius:2px;margin-right:12px"></div>
                             <div class="flex-fill">
                                 <div class="fw-bold">{{ $agendamento->paciente->nome }}</div>
                                 <small class="text-secondary">
@@ -166,7 +223,8 @@
                         </div>
                     @empty
                         <div class="text-center text-secondary py-4">
-                            Nenhum agendamento futuro.
+                            <div style="font-size:2rem">📭</div>
+                            <div class="mt-2">Nenhum agendamento futuro</div>
                         </div>
                     @endforelse
                 </div>
@@ -174,25 +232,33 @@
 
             {{-- Estoque baixo --}}
             @if($produtosEstoqueBaixo->count() > 0)
-                <div class="card border-warning">
-                    <div class="card-header">
-                        <h3 class="card-title text-warning">⚠️ Estoque Baixo</h3>
+                <div class="card" style="border-color:#ed8936">
+                    <div class="card-header" style="border-bottom-color:#ed8936">
+                        <h3 class="card-title" style="color:#ed8936">
+                            ⚠️ Estoque Baixo
+                        </h3>
                         <span class="ms-auto">
-                            <a href="{{ route('estoque.produtos.index') }}" class="btn btn-sm btn-secondary">Ver todos</a>
+                            <a href="{{ route('estoque.produtos.index') }}"
+                                class="btn btn-sm btn-secondary">Ver todos</a>
                         </span>
                     </div>
                     <div class="card-body p-0">
-                        @foreach($produtosEstoqueBaixo->take(5) as $produto)
+                        @foreach($produtosEstoqueBaixo->take(4) as $produto)
                             <div class="d-flex align-items-center p-3 border-bottom">
+                                <div class="me-3" style="font-size:1.3rem">📦</div>
                                 <div class="flex-fill">
                                     <div class="fw-bold">{{ $produto->nome }}</div>
-                                    <small class="text-secondary">{{ $produto->categoria->nome ?? 'Sem categoria' }}</small>
+                                    <small class="text-secondary">
+                                        {{ $produto->categoria->nome ?? 'Sem categoria' }}
+                                    </small>
                                 </div>
                                 <div class="text-end">
                                     <div class="text-danger fw-bold">
                                         {{ number_format($produto->estoque_atual, 2, ',', '.') }} {{ $produto->unidade }}
                                     </div>
-                                    <small class="text-secondary">mín: {{ number_format($produto->estoque_minimo, 2, ',', '.') }}</small>
+                                    <small class="text-secondary">
+                                        mín: {{ number_format($produto->estoque_minimo, 2, ',', '.') }}
+                                    </small>
                                 </div>
                             </div>
                         @endforeach
@@ -211,30 +277,32 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    // Dados dos gráficos vindos do PHP
-    const agendamentosMeses = @json($agendamentosPorMes->pluck('mes'));
-    const agendamentosTotais = @json($agendamentosPorMes->pluck('total'));
-
-    const receitaMeses = @json($receitaPorMes->pluck('mes'));
-    const receitaTotais = @json($receitaPorMes->pluck('total'));
+    const ceopRed = '#c0392b';
 
     // Gráfico de agendamentos
     new Chart(document.getElementById('grafico-agendamentos'), {
         type: 'bar',
         data: {
-            labels: agendamentosMeses,
+            labels: @json($agendamentosPorMes->pluck('mes')),
             datasets: [{
                 label: 'Agendamentos',
-                data: agendamentosTotais,
-                backgroundColor: '#4299e1',
-                borderRadius: 4,
+                data: @json($agendamentosPorMes->pluck('total')),
+                backgroundColor: 'rgba(192,57,43,0.7)',
+                borderColor: ceopRed,
+                borderWidth: 1,
+                borderRadius: 6,
             }]
         },
         options: {
             responsive: true,
             plugins: { legend: { display: false } },
             scales: {
-                y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 },
+                    grid: { color: 'rgba(0,0,0,0.05)' }
+                },
+                x: { grid: { display: false } }
             }
         }
     });
@@ -243,15 +311,17 @@ document.addEventListener('DOMContentLoaded', function () {
     new Chart(document.getElementById('grafico-receita'), {
         type: 'line',
         data: {
-            labels: receitaMeses,
+            labels: @json($receitaPorMes->pluck('mes')),
             datasets: [{
                 label: 'Receita (R$)',
-                data: receitaTotais,
+                data: @json($receitaPorMes->pluck('total')),
                 borderColor: '#48bb78',
                 backgroundColor: 'rgba(72,187,120,0.1)',
                 fill: true,
                 tension: 0.4,
                 pointBackgroundColor: '#48bb78',
+                pointRadius: 5,
+                pointHoverRadius: 7,
             }]
         },
         options: {
@@ -261,9 +331,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        callback: value => 'R$ ' + value.toLocaleString('pt-BR')
-                    }
-                }
+                        callback: v => 'R$ ' + v.toLocaleString('pt-BR')
+                    },
+                    grid: { color: 'rgba(0,0,0,0.05)' }
+                },
+                x: { grid: { display: false } }
             }
         }
     });

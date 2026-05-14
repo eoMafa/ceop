@@ -7,12 +7,159 @@
     <title>{{ config('app.name') }} - @yield('title', 'Dashboard')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
+    <style>
+        .navbar-vertical.navbar-expand-lg {
+            overflow-y: auto !important;
+            scrollbar-width: thin;
+            scrollbar-color: transparent transparent;
+        }
+
+        .navbar-vertical.navbar-expand-lg:hover {
+            scrollbar-color: rgba(192,57,43,0.3) transparent;
+        }
+
+        .navbar-vertical.navbar-expand-lg::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .navbar-vertical.navbar-expand-lg::-webkit-scrollbar-thumb {
+            background: transparent;
+            border-radius: 3px;
+        }
+
+        .navbar-vertical.navbar-expand-lg:hover::-webkit-scrollbar-thumb {
+            background: rgba(192,57,43,0.3);
+        }
+        :root {
+            --ceop-red:  #c0392b;
+            --ceop-dark: #1a0a0a;
+        }
+
+        /* Sidebar */
+        .navbar-vertical {
+            background: linear-gradient(180deg, #1a0a0a 0%, #2c1010 100%) !important;
+            border-right: 1px solid #3a1a1a !important;
+        }
+
+        .navbar-vertical .navbar-brand {
+            border-bottom: 1px solid #3a1a1a;
+            padding-bottom: 16px;
+            margin-bottom: 8px;
+        }
+
+        .navbar-vertical .navbar-brand-text {
+            color: #fff !important;
+            font-weight: 900;
+            font-size: 1.2rem;
+            letter-spacing: -0.5px;
+        }
+
+        .navbar-vertical .nav-link {
+            color: #aaa !important;
+            border-radius: 6px;
+            margin: 2px 8px;
+            transition: all 0.2s ease;
+        }
+
+        .navbar-vertical .nav-link:hover {
+            color: #fff !important;
+            background: rgba(192,57,43,0.15) !important;
+        }
+
+        .navbar-vertical .nav-link.active {
+            color: #fff !important;
+            background: rgba(192,57,43,0.25) !important;
+            border-left: 3px solid var(--ceop-red);
+        }
+
+        .navbar-vertical .nav-link-title {
+            font-size: 0.88rem;
+        }
+
+        .navbar-vertical .nav-section {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #555 !important;
+            padding: 12px 16px 4px;
+        }
+
+        /* Avatar do usuário */
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--ceop-red), #e74c3c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        /* Dropdown da sidebar */
+        .navbar-vertical .dropdown-menu {
+            background: #1a1a1a;
+            border: 1px solid #333;
+        }
+
+        .navbar-vertical .dropdown-item {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+
+        .navbar-vertical .dropdown-item:hover {
+            background: rgba(192,57,43,0.15);
+            color: #fff;
+        }
+
+        .navbar-vertical .dropdown-divider {
+            border-color: #333;
+        }
+
+        /* Botões primários com cor CEOP */
+        .btn-primary {
+            background-color: var(--ceop-red) !important;
+            border-color: var(--ceop-red) !important;
+        }
+
+        .btn-primary:hover {
+            background-color: #a93226 !important;
+            border-color: #a93226 !important;
+        }
+
+        /* Badge de notificação */
+        .badge-notification {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            font-size: 10px;
+            min-width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            padding: 0 4px;
+        }
+
+        /* Links ativos com cor CEOP */
+        a { color: var(--ceop-red); }
+        a:hover { color: #a93226; }
+        .btn-primary, .bg-primary { background-color: var(--ceop-red) !important; }
+        .text-primary { color: var(--ceop-red) !important; }
+        .border-primary { border-color: var(--ceop-red) !important; }
+    </style>
 </head>
 
 <body class="antialiased layout-fluid">
     <div class="wrapper">
 
-        <aside class="navbar navbar-vertical navbar-expand-lg navbar-dark" data-bs-theme="dark">
+        {{-- Sidebar --}}
+        <aside class="navbar navbar-vertical navbar-expand-lg" data-bs-theme="dark">
             <div class="container-fluid">
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -20,14 +167,22 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <h1 class="navbar-brand navbar-brand-autodark">
-                    <a href="{{ route('dashboard') }}">
-                        🦷 {{ config('app.name') }}
+                {{-- Logo --}}
+                <h1 class="navbar-brand navbar-brand-autodark w-100">
+                    <a href="{{ route('dashboard') }}" class="d-flex align-items-center gap-2">
+                        <div>
+                            <div style="font-size:1.4rem;font-weight:900;color:#fff;letter-spacing:-0.5px;line-height:1">
+                                CEOP
+                            </div>
+                            <div style="font-size:0.6rem;color:#c0392b;letter-spacing:2px;text-transform:uppercase;line-height:1;margin-top:2px">
+                                Odontologia
+                            </div>
+                        </div>
                     </a>
                 </h1>
 
                 <div class="collapse navbar-collapse show" id="sidebar-menu">
-                    <ul class="navbar-nav pt-lg-3">
+                    <ul class="navbar-nav pt-lg-2">
 
                         {{-- Dashboard --}}
                         <li class="nav-item">
@@ -46,7 +201,9 @@
                             </a>
                         </li>
 
-                        {{-- Pacientes --}}
+                        {{-- Seção Clínica --}}
+                        <li class="nav-section">Clínica</li>
+
                         @if(auth()->user()->podeVer('pacientes'))
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('pacientes.*') ? 'active' : '' }}"
@@ -64,27 +221,6 @@
                             </li>
                         @endif
 
-                        {{-- Procedimentos --}}
-                        @if(auth()->user()->podeVer('pacientes'))
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('procedimentos.*') ? 'active' : '' }}"
-                                    href="{{ route('procedimentos.index') }}">
-                                    <span class="nav-link-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
-                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                            <path d="M9 12h6" />
-                                            <path d="M11 8h2" />
-                                            <path d="M9 16h6" />
-                                            <rect x="4" y="4" width="16" height="16" rx="2" />
-                                        </svg>
-                                    </span>
-                                    <span class="nav-link-title">Procedimentos</span>
-                                </a>
-                            </li>
-                        @endif
-
-                        {{-- Agendamentos --}}
                         @if(auth()->user()->podeVer('agendamentos'))
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('agendamentos.*') ? 'active' : '' }}"
@@ -104,7 +240,6 @@
                             </li>
                         @endif
 
-                        {{-- Consultas --}}
                         @if(auth()->user()->podeVer('prontuario'))
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('evolucoes.*') ? 'active' : '' }}"
@@ -124,8 +259,29 @@
                             </li>
                         @endif
 
-                        {{-- Financeiro --}}
+                        @if(auth()->user()->podeVer('pacientes'))
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('procedimentos.*') ? 'active' : '' }}"
+                                    href="{{ route('procedimentos.index') }}">
+                                    <span class="nav-link-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path d="M9 12h6" />
+                                            <path d="M11 8h2" />
+                                            <path d="M9 16h6" />
+                                            <rect x="4" y="4" width="16" height="16" rx="2" />
+                                        </svg>
+                                    </span>
+                                    <span class="nav-link-title">Procedimentos</span>
+                                </a>
+                            </li>
+                        @endif
+
+                        {{-- Seção Financeiro --}}
                         @if(auth()->user()->podeVer('financeiro'))
+                            <li class="nav-section">Financeiro</li>
+
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle {{ request()->routeIs('orcamentos.*') || request()->routeIs('pagamentos.*') || request()->routeIs('convenios.*') ? 'active' : '' }}"
                                     href="#" data-bs-toggle="dropdown">
@@ -142,15 +298,17 @@
                                     <span class="nav-link-title">Financeiro</span>
                                 </a>
                                 <div class="dropdown-menu">
-                                    <a href="{{ route('orcamentos.index') }}" class="dropdown-item">Orçamentos</a>
-                                    <a href="{{ route('pagamentos.index') }}" class="dropdown-item">Pagamentos</a>
-                                    <a href="{{ route('convenios.index') }}" class="dropdown-item">Convênios</a>
+                                    <a href="{{ route('orcamentos.index') }}" class="dropdown-item">💼 Orçamentos</a>
+                                    <a href="{{ route('pagamentos.index') }}" class="dropdown-item">💳 Pagamentos</a>
+                                    <a href="{{ route('convenios.index') }}" class="dropdown-item">🤝 Convênios</a>
                                 </div>
                             </li>
                         @endif
 
-                        {{-- Estoque --}}
+                        {{-- Seção Estoque --}}
                         @if(auth()->user()->podeVer('estoque'))
+                            <li class="nav-section">Estoque</li>
+
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle {{ request()->routeIs('estoque.*') ? 'active' : '' }}"
                                     href="#" data-bs-toggle="dropdown">
@@ -167,14 +325,17 @@
                                     <span class="nav-link-title">Estoque</span>
                                 </a>
                                 <div class="dropdown-menu">
-                                    <a href="{{ route('estoque.produtos.index') }}" class="dropdown-item">Produtos</a>
-                                    <a href="{{ route('estoque.fornecedores.index') }}" class="dropdown-item">Fornecedores</a>
-                                    <a href="{{ route('estoque.categorias.index') }}" class="dropdown-item">Categorias</a>
+                                    <a href="{{ route('estoque.produtos.index') }}" class="dropdown-item">📦 Produtos</a>
+                                    <a href="{{ route('estoque.fornecedores.index') }}" class="dropdown-item">🚚 Fornecedores</a>
+                                    <a href="{{ route('estoque.categorias.index') }}" class="dropdown-item">🏷️ Categorias</a>
                                 </div>
                             </li>
                         @endif
 
+                        {{-- Seção Relatórios --}}
                         @if(auth()->user()->podeVer('relatorios'))
+                            <li class="nav-section">Análises</li>
+
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle {{ request()->routeIs('relatorios.*') ? 'active' : '' }}"
                                     href="#" data-bs-toggle="dropdown">
@@ -193,17 +354,19 @@
                                     <span class="nav-link-title">Relatórios</span>
                                 </a>
                                 <div class="dropdown-menu">
-                                    <a href="{{ route('relatorios.financeiro') }}" class="dropdown-item">Financeiro</a>
-                                    <a href="{{ route('relatorios.lucratividade') }}" class="dropdown-item">Lucratividade</a>
-                                    <a href="{{ route('relatorios.atendimento') }}" class="dropdown-item">Atendimento</a>
-                                    <a href="{{ route('relatorios.pacientes') }}" class="dropdown-item">Pacientes</a>
-                                    <a href="{{ route('relatorios.estoque') }}" class="dropdown-item">Estoque</a>
+                                    <a href="{{ route('relatorios.financeiro') }}" class="dropdown-item">💰 Financeiro</a>
+                                    <a href="{{ route('relatorios.atendimento') }}" class="dropdown-item">📅 Atendimento</a>
+                                    <a href="{{ route('relatorios.pacientes') }}" class="dropdown-item">👥 Pacientes</a>
+                                    <a href="{{ route('relatorios.estoque') }}" class="dropdown-item">📦 Estoque</a>
+                                    <a href="{{ route('relatorios.lucratividade') }}" class="dropdown-item">📊 Lucratividade</a>
                                 </div>
                             </li>
                         @endif
 
-                        {{-- Usuários --}}
+                        {{-- Seção Admin --}}
                         @if(auth()->user()->podeVer('usuarios'))
+                            <li class="nav-section">Administração</li>
+
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('usuarios.*') ? 'active' : '' }}"
                                     href="{{ route('usuarios.index') }}">
@@ -219,9 +382,7 @@
                                     <span class="nav-link-title">Usuários</span>
                                 </a>
                             </li>
-                        @endif
 
-                        @if(auth()->user()->podeVer('usuarios'))
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('logs.*') ? 'active' : '' }}"
                                     href="{{ route('logs.index') }}">
@@ -242,40 +403,67 @@
 
                     </ul>
 
-                    <div class="mt-auto pb-3">
-                        <ul class="navbar-nav">
-                            <li class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                                    <span class="nav-link-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
-                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                            <circle cx="12" cy="7" r="4" />
-                                            <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
-                                        </svg>
-                                    </span>
-                                    <span class="nav-link-title">{{ Auth::user()->name }}</span>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-end">
-                                    <a href="{{ route('profile.edit') }}" class="dropdown-item">Perfil</a>
-                                    <div class="dropdown-divider"></div>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item text-danger">Sair</button>
-                                    </form>
+                    {{-- Usuário logado --}}
+                    <div class="mt-auto pb-3 pt-3" style="border-top:1px solid #3a1a1a">
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle d-flex align-items-center gap-2"
+                                data-bs-toggle="dropdown">
+                                <div class="user-avatar">
+                                    {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                                 </div>
-                            </li>
-                        </ul>
+                                <div class="flex-fill" style="min-width:0">
+                                    <div class="nav-link-title text-white" style="font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                                        {{ Auth::user()->name }}
+                                    </div>
+                                    <div style="font-size:0.7rem;color:#666">
+                                        {{ ucfirst(Auth::user()->role) }}
+                                    </div>
+                                </div>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <a href="{{ route('profile.edit') }}" class="dropdown-item">
+                                    👤 Meu Perfil
+                                </a>
+                                <a href="{{ route('notificacoes.index') }}" class="dropdown-item">
+                                    🔔 Notificações
+                                    @php $naoLidas = auth()->user()->notificacoesNaoLidas()->count(); @endphp
+                                    @if($naoLidas > 0)
+                                        <span class="badge bg-danger ms-1">{{ $naoLidas }}</span>
+                                    @endif
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        🚪 Sair
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </aside>
 
+        {{-- Conteúdo principal --}}
         <div class="page-wrapper">
 
+            {{-- Header --}}
             <div class="page-header d-print-none">
                 <div class="container-fluid">
                     <div class="row g-2 align-items-center">
+                        <div class="col">
+                            <h2 class="page-title">@yield('title', 'Dashboard')</h2>
+                            @hasSection('breadcrumb')
+                                <ol class="breadcrumb mt-1">
+                                    <li class="breadcrumb-item">
+                                        <a href="{{ route('dashboard') }}">Início</a>
+                                    </li>
+                                    @yield('breadcrumb')
+                                </ol>
+                            @endif
+                        </div>
 
                         {{-- Sino de notificações --}}
                         <div class="col-auto">
@@ -289,14 +477,16 @@
                                     </svg>
                                     @php $totalNaoLidas = auth()->user()->notificacoesNaoLidas()->count(); @endphp
                                     @if($totalNaoLidas > 0)
-                                        <span class="badge bg-danger badge-notification">{{ $totalNaoLidas > 99 ? '99+' : $totalNaoLidas }}</span>
+                                        <span class="badge bg-danger badge-notification">
+                                            {{ $totalNaoLidas > 99 ? '99+' : $totalNaoLidas }}
+                                        </span>
                                     @endif
                                 </a>
-                                <div class="dropdown-menu dropdown-menu-end" style="width: 350px; max-height: 400px; overflow-y: auto;">
+                                <div class="dropdown-menu dropdown-menu-end" style="width:350px;max-height:400px;overflow-y:auto">
                                     <div class="dropdown-header d-flex justify-content-between align-items-center">
-                                        <span>Notificações</span>
+                                        <span>🔔 Notificações</span>
                                         @if($totalNaoLidas > 0)
-                                            <form action="{{ route('notificacoes.ler-todas') }}" method="POST" class="d-inline">
+                                            <form action="{{ route('notificacoes.ler-todas') }}" method="POST">
                                                 @csrf
                                                 @method('PATCH')
                                                 <button type="submit" class="btn btn-sm btn-ghost-secondary">
@@ -311,48 +501,18 @@
                                     @endphp
 
                                     @forelse($notificacoesRecentes as $notificacao)
-
-                                        <form action="{{ route('notificacoes.ler', $notificacao->id) }}"
-                                            method="POST"
-                                            class="m-0">
-
-                                            @csrf
-                                            @method('PATCH')
-
-                                            <button type="submit"
-                                                    class="dropdown-item border-0 bg-transparent w-100 text-start {{ !$notificacao->lida ? 'bg-light' : '' }}">
-
-                                                <div class="d-flex align-items-start py-2">
-
-                                                    <span class="me-2 mt-1">
-                                                        {{ $notificacao->icone_tipo }}
-                                                    </span>
-
-                                                    <div class="flex-fill">
-                                                        <div class="fw-bold" style="font-size:13px">
-                                                            {{ $notificacao->titulo }}
-                                                        </div>
-
-                                                        <div class="text-secondary" style="font-size:12px">
-                                                            {{ $notificacao->mensagem }}
-                                                        </div>
-
-                                                        <div class="text-secondary" style="font-size:11px">
-                                                            {{ $notificacao->created_at->diffForHumans() }}
-                                                        </div>
-                                                    </div>
-
-                                                    @if(!$notificacao->lida)
-                                                        <span class="badge bg-danger ms-1"
-                                                            style="width:8px;height:8px;border-radius:50%;padding:0">
-                                                        </span>
-                                                    @endif
-
-                                                </div>
-
-                                            </button>
-                                        </form>
-
+                                        <a href="{{ route('notificacoes.ler', $notificacao->id) }}"
+                                            class="dropdown-item d-flex align-items-start py-2 {{ !$notificacao->lida ? 'bg-light' : '' }}">
+                                            <span class="me-2 mt-1">{{ $notificacao->icone_tipo }}</span>
+                                            <div class="flex-fill">
+                                                <div class="fw-bold" style="font-size:13px">{{ $notificacao->titulo }}</div>
+                                                <div class="text-secondary" style="font-size:12px">{{ $notificacao->mensagem }}</div>
+                                                <div class="text-secondary" style="font-size:11px">{{ $notificacao->created_at->diffForHumans() }}</div>
+                                            </div>
+                                            @if(!$notificacao->lida)
+                                                <span class="badge bg-danger ms-1" style="width:8px;height:8px;border-radius:50%;padding:0"></span>
+                                            @endif
+                                        </a>
                                     @empty
                                         <div class="dropdown-item text-center text-secondary py-3">
                                             Nenhuma notificação
@@ -360,26 +520,16 @@
                                     @endforelse
 
                                     <div class="dropdown-divider"></div>
-                                    <a href="{{ route('notificacoes.index') }}" class="dropdown-item text-center text-primary">
+                                    <a href="{{ route('notificacoes.index') }}" class="dropdown-item text-center" style="color:var(--ceop-red)">
                                         Ver todas as notificações
                                     </a>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col">
-                            <h2 class="page-title">@yield('title', 'Dashboard')</h2>
-                            @hasSection('breadcrumb')
-                                <ol class="breadcrumb mt-1">
-                                    <li class="breadcrumb-item">
-                                        <a href="{{ route('dashboard') }}">Início</a>
-                                    </li>
-                                    @yield('breadcrumb')
-                                </ol>
-                            @endif
-                        </div>
+                        {{-- Botões do header --}}
                         @hasSection('actions')
-                            <div class="col-auto ms-auto">
+                            <div class="col-auto">
                                 @yield('actions')
                             </div>
                         @endif
@@ -387,18 +537,21 @@
                 </div>
             </div>
 
+            {{-- Conteúdo da página --}}
             <div class="page-body">
                 <div class="container-fluid">
                     @yield('content')
                 </div>
             </div>
 
+            {{-- Footer --}}
             <footer class="footer footer-transparent d-print-none">
-                <div class="container-xl">
+                <div class="container-fluid">
                     <div class="row text-center align-items-center">
-                        <div class="col-12 col-lg-auto">
-                            <p class="mb-0 text-secondary">
-                                {{ config('app.name') }} &copy; {{ date('Y') }}
+                        <div class="col-12">
+                            <p class="mb-0 text-secondary" style="font-size:0.8rem">
+                                <span style="color:var(--ceop-red);font-weight:700">CEOP</span>
+                                — Centro Especializado em Odontologia e Prótese &copy; {{ date('Y') }}
                             </p>
                         </div>
                     </div>
@@ -407,7 +560,8 @@
 
         </div>
     </div>
-    {{-- Aviso de timeout de sessão --}}
+
+    {{-- Timeout de sessão --}}
     <div class="modal modal-blur fade" id="modal-timeout" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
@@ -428,25 +582,26 @@
     </div>
 
     <script>
+        window.sessionSuccess = @json(session('success'));
+        window.sessionError   = @json(session('error'));
+    </script>
+
+    @stack('scripts')
+
+    <script>
     (function () {
         const TIMEOUT_MINUTOS = 120;
-        const AVISO_MINUTOS   = 5; // avisa 5 minutos antes
+        const AVISO_MINUTOS   = 5;
         const AVISO_MS        = (TIMEOUT_MINUTOS - AVISO_MINUTOS) * 60 * 1000;
-        const COUNTDOWN_MS    = AVISO_MINUTOS * 60 * 1000;
 
-        let countdownInterval;
-        let timeoutTimer;
-        let avisoTimer;
+        let countdownInterval, timeoutTimer, avisoTimer;
 
         function resetTimers() {
             clearTimeout(avisoTimer);
             clearTimeout(timeoutTimer);
             clearInterval(countdownInterval);
 
-            // Inicia timer para mostrar aviso
             avisoTimer = setTimeout(mostrarAviso, AVISO_MS);
-
-            // Inicia timer para logout automático
             timeoutTimer = setTimeout(function () {
                 window.location.href = '{{ route("login") }}';
             }, TIMEOUT_MINUTOS * 60 * 1000);
@@ -457,41 +612,29 @@
             modal.show();
 
             let segundosRestantes = AVISO_MINUTOS * 60;
-
             countdownInterval = setInterval(function () {
                 segundosRestantes--;
                 const mins = Math.floor(segundosRestantes / 60);
                 const secs = segundosRestantes % 60;
                 document.getElementById('countdown').textContent =
                     `${mins}:${secs.toString().padStart(2, '0')}`;
-
-                if (segundosRestantes <= 0) {
-                    clearInterval(countdownInterval);
-                }
+                if (segundosRestantes <= 0) clearInterval(countdownInterval);
             }, 1000);
         }
 
-        // Continuar conectado — faz ping no servidor
         document.getElementById('btn-continuar').addEventListener('click', function () {
             fetch('{{ route("dashboard") }}', { method: 'HEAD' });
             bootstrap.Modal.getInstance(document.getElementById('modal-timeout'))?.hide();
             resetTimers();
         });
 
-        // Reseta timers em qualquer atividade do usuário
-        ['click', 'keypress', 'mousemove', 'scroll'].forEach(function (evento) {
-            document.addEventListener(evento, resetTimers, { passive: true });
+        ['click', 'keypress', 'mousemove', 'scroll'].forEach(function (e) {
+            document.addEventListener(e, resetTimers, { passive: true });
         });
 
-        // Inicia
         resetTimers();
     })();
     </script>
-    <script>
-        window.sessionSuccess = @json(session('success'));
-        window.sessionError = @json(session('error'));
-    </script>
-    @stack('scripts')
-</body>
 
+</body>
 </html>
