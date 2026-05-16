@@ -152,6 +152,232 @@
         .btn-primary, .bg-primary { background-color: var(--ceop-red) !important; }
         .text-primary { color: var(--ceop-red) !important; }
         .border-primary { border-color: var(--ceop-red) !important; }
+
+        /* ===== FORMULÁRIOS GLOBAIS ===== */
+
+        /* Cards de formulário com borda CEOP no topo */
+        .card {
+            border-radius: 8px;
+            border: 1px solid #e8e8e8;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+
+        .card-header {
+            border-bottom: 1px solid #f0f0f0;
+            background: #fafafa;
+            border-radius: 8px 8px 0 0 !important;
+            padding: 14px 20px;
+            position: relative;
+        }
+
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #c0392b, #e74c3c);
+            border-radius: 8px 8px 0 0;
+        }
+
+        .card-header .card-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Inputs com foco CEOP */
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #c0392b !important;
+            box-shadow: 0 0 0 3px rgba(192,57,43,0.1) !important;
+        }
+
+        /* Labels mais modernos */
+        .form-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        /* Required asterisk vermelho */
+        .form-label.required::after,
+        .required::after {
+            content: ' *';
+            color: #c0392b;
+        }
+
+        /* Inputs com borda mais suave */
+        .form-control,
+        .form-select {
+            border: 1.5px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 9px 12px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            color: #333;
+        }
+
+        .form-control:hover,
+        .form-select:hover {
+            border-color: #c0392b;
+        }
+
+        /* Placeholder */
+        .form-control::placeholder {
+            color: #bbb;
+            font-size: 0.88rem;
+        }
+
+        /* Input group */
+        .input-group-text {
+            background: #f5f5f5;
+            border: 1.5px solid #e0e0e0;
+            color: #666;
+            font-size: 0.88rem;
+        }
+
+        /* Textarea */
+        textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Botão Salvar */
+        .btn-primary {
+            background: linear-gradient(135deg, #c0392b, #e74c3c) !important;
+            border: none !important;
+            border-radius: 6px !important;
+            padding: 10px 28px !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.5px !important;
+            box-shadow: 0 2px 8px rgba(192,57,43,0.3) !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 15px rgba(192,57,43,0.4) !important;
+            background: linear-gradient(135deg, #a93226, #c0392b) !important;
+        }
+
+        /* Botão Cancelar/Secundário */
+        .btn-secondary {
+            border-radius: 6px !important;
+            padding: 10px 28px !important;
+            font-weight: 600 !important;
+        }
+
+        /* Feedback de validação */
+        .invalid-feedback {
+            font-size: 0.78rem;
+            color: #c0392b;
+        }
+
+        .is-invalid {
+            border-color: #c0392b !important;
+            background-image: none !important;
+        }
+
+        .is-invalid:focus {
+            box-shadow: 0 0 0 3px rgba(192,57,43,0.15) !important;
+        }
+
+        /* Form check / switch */
+        .form-check-input:checked {
+            background-color: #c0392b !important;
+            border-color: #c0392b !important;
+        }
+
+        /* Badges */
+        .badge {
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+        }
+
+        /* Tabelas */
+        .table thead th {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #888;
+            border-bottom: 2px solid #f0f0f0;
+            padding: 10px 16px;
+        }
+
+        .table tbody td {
+            padding: 12px 16px;
+            font-size: 0.88rem;
+            vertical-align: middle;
+            color: #444;
+        }
+
+        .table-hover tbody tr:hover {
+            background: rgba(192,57,43,0.03);
+        }
+
+        /* Paginação */
+        .page-link {
+            color: #c0392b;
+            border-radius: 4px !important;
+            margin: 0 2px;
+        }
+
+        .page-item.active .page-link {
+            background-color: #c0392b !important;
+            border-color: #c0392b !important;
+        }
+
+        .page-link:hover {
+            color: #a93226;
+            background: rgba(192,57,43,0.08);
+        }
+
+        /* Breadcrumb */
+        .breadcrumb-item a {
+            color: #c0392b;
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: #888;
+        }
+
+        /* Page title */
+        .page-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #222;
+        }
+
+        /* Alertas */
+        .alert-success {
+            background: rgba(72,187,120,0.1);
+            border: 1px solid rgba(72,187,120,0.3);
+            color: #276749;
+            border-radius: 6px;
+        }
+
+        .alert-danger {
+            background: rgba(192,57,43,0.1);
+            border: 1px solid rgba(192,57,43,0.3);
+            color: #c0392b;
+            border-radius: 6px;
+        }
+
+        .alert-warning {
+            background: rgba(237,137,54,0.1);
+            border: 1px solid rgba(237,137,54,0.3);
+            color: #975a16;
+            border-radius: 6px;
+        }
     </style>
 </head>
 
