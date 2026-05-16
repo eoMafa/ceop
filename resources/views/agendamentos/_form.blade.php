@@ -7,7 +7,7 @@
 
             <div class="col-md-6">
                 <label class="form-label required">Paciente</label>
-                <select name="paciente_id" class="form-select @error('paciente_id') is-invalid @enderror">
+                <select name="paciente_id" id="paciente_id" class="form-select @error('paciente_id') is-invalid @enderror">
                     <option value="">Selecione...</option>
                     @foreach($pacientes as $paciente)
                         <option value="{{ $paciente->id }}"
@@ -53,21 +53,6 @@
                 @error('procedimento_id')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
-            </div>
-
-            <div class="col-md-6" id="campo-orcamento">
-                <label class="form-label">Orçamento Vinculado</label>
-                <select name="orcamento_id" id="orcamento_id" class="form-select">
-                    <option value="">Nenhum</option>
-                    @if(isset($agendamento) && $agendamento->paciente_id)
-                        @foreach(App\Models\Orcamento::where('paciente_id', $agendamento->paciente_id)->where('status', 'aprovado')->get() as $orc)
-                            <option value="{{ $orc->id }}"
-                                {{ old('orcamento_id', $orcamento_id ?? $agendamento->orcamento_id ?? '') == $orc->id ? 'selected' : '' }}>
-                                #{{ $orc->id }} — R$ {{ number_format($orc->total_liquido, 2, ',', '.') }}
-                            </option>
-                        @endforeach
-                    @endif
-                </select>
             </div>
 
             <div class="col-md-3">
@@ -161,21 +146,39 @@
     // Dispara ao carregar para preencher duração no edit
     document.getElementById('procedimento_id').dispatchEvent(new Event('change'));
 
+    // Carrega orçamentos ao trocar paciente
     document.getElementById('paciente_id').addEventListener('change', function () {
         const pacienteId = this.value;
         const select = document.getElementById('orcamento_id');
-
         select.innerHTML = '<option value="">Nenhum</option>';
-
         if (!pacienteId) return;
 
         fetch(`/evolucoes/orcamentos-por-paciente?paciente_id=${pacienteId}`)
             .then(r => r.json())
             .then(data => {
                 data.forEach(orc => {
-                    select.innerHTML += `<option value="${orc.id}">#${orc.id} — R$ ${parseFloat(orc.total_liquido).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</option>`;
+                    const valor = parseFloat(orc.total_liquido).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                    select.innerHTML += `<option value="${orc.id}">#${orc.id} — R$ ${valor}</option>`;
                 });
+
+                // Se estiver editando, re-seleciona o orçamento atual
+                const orcamentoAtual = '{{ old("orcamento_id", $agendamento->orcamento_id ?? "") }}';
+                if (orcamentoAtual) {
+                    document.getElementById('orcamento_id').value = orcamentoAtual;
+                }
             });
+    });
+
+    // Dispara ao carregar se já tiver paciente selecionado (edit)
+    const pacienteSelect = document.getElementById('paciente_id');
+    if (pacienteSelect.value) {
+        pacienteSelect.dispatchEvent(new Event('change'));
+    }
+
+    // Mostrar/ocultar campo orçamento conforme tipo
+    document.getElementById('tipo').addEventListener('change', function () {
+        const campoOrcamento = document.getElementById('campo-orcamento');
+        campoOrcamento.style.display = this.value === 'consulta' ? '' : 'none';
     });
 </script>
 @endpush
