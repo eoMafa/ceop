@@ -8,7 +8,7 @@
 @endsection
 
 @section('content')
-    <form action="{{ route('orcamentos.update', $orcamento->id) }}" method="POST">
+    <form action="{{ route('orcamentos.update', $orcamento->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         @include('orcamentos._form')

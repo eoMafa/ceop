@@ -58,6 +58,11 @@ class Orcamento extends Model
         return $this->hasMany(Pagamento::class);
     }
 
+    public function arquivos()
+    {
+        return $this->hasMany(OrcamentoArquivo::class);
+    }
+
     public function calcularTotais(): void
     {
         $bruto = $this->itens->sum('valor_total');

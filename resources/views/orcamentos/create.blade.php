@@ -8,7 +8,7 @@
 @endsection
 
 @section('content')
-    <form action="{{ route('orcamentos.store') }}" method="POST">
+    <form action="{{ route('orcamentos.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         @include('orcamentos._form')
     </form>

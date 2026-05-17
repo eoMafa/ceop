@@ -79,6 +79,51 @@
                 </table>
             </div>
 
+            {{-- Arquivos da ficha --}}
+            @if($orcamento->arquivos->count() > 0)
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h3 class="card-title">📎 Ficha do Paciente</h3>
+                        <span class="ms-auto text-secondary">{{ $orcamento->arquivos->count() }} arquivo(s)</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            @foreach($orcamento->arquivos as $arquivo)
+                                <div class="col-auto">
+                                    <div class="card card-sm">
+                                        <div class="card-body p-2 text-center">
+                                            @if(str_starts_with($arquivo->tipo_mime, 'image/'))
+                                                <a href="{{ $arquivo->url }}" target="_blank">
+                                                    <img src="{{ $arquivo->url }}"
+                                                        style="width:120px;height:120px;object-fit:cover;border-radius:4px;">
+                                                </a>
+                                            @else
+                                                <a href="{{ $arquivo->url }}" target="_blank"
+                                                    class="btn btn-secondary btn-sm">
+                                                    📄 {{ Str::limit($arquivo->nome_original, 20) }}
+                                                </a>
+                                            @endif
+                                            <div class="mt-1">
+                                                <small class="text-secondary d-block">{{ $arquivo->tamanho_formatado }}</small>
+                                                <form action="{{ route('orcamentos.arquivos.destroy', $arquivo->id) }}"
+                                                    method="POST"
+                                                    data-confirm="Remover este arquivo?">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-ghost-danger">
+                                                        Remover
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             {{-- Pagamentos vinculados --}}
             @if($orcamento->pagamentos->count() > 0)
                 <div class="card">

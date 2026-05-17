@@ -75,6 +75,61 @@
                     class="form-control">{{ old('observacoes', $orcamento->observacoes ?? '') }}</textarea>
             </div>
 
+            {{-- Arquivos da ficha --}}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h3 class="card-title">📎 Ficha do Paciente</h3>
+                </div>
+                <div class="card-body">
+
+                    {{-- Arquivos existentes no edit --}}
+                    @if(isset($orcamento->id) && $orcamento->arquivos->count() > 0)
+                        <div class="row g-2 mb-3">
+                            @foreach($orcamento->arquivos as $arquivo)
+                                <div class="col-auto">
+                                    <div class="card card-sm">
+                                        <div class="card-body p-2 text-center">
+                                            @if(str_starts_with($arquivo->tipo_mime, 'image/'))
+                                                <a href="{{ $arquivo->url }}" target="_blank">
+                                                    <img src="{{ $arquivo->url }}"
+                                                        style="width:100px;height:100px;object-fit:cover;border-radius:4px;">
+                                                </a>
+                                            @else
+                                                <a href="{{ $arquivo->url }}" target="_blank"
+                                                    class="btn btn-sm btn-secondary">
+                                                    📄 {{ Str::limit($arquivo->nome_original, 20) }}
+                                                </a>
+                                            @endif
+                                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                                <small class="text-secondary">{{ $arquivo->tamanho_formatado }}</small>
+                                                <form action="{{ route('orcamentos.arquivos.destroy', $arquivo->id) }}"
+                                                    method="POST"
+                                                    data-confirm="Remover este arquivo?">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-ghost-danger py-0">✕</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    <label class="form-label">Adicionar Fotos da Ficha</label>
+                    <input type="file" name="arquivos[]" multiple
+                        class="form-control @error('arquivos.*') is-invalid @enderror"
+                        accept="image/*,.pdf">
+                    <small class="text-secondary">
+                        Aceita imagens e PDF. Máximo 10MB por arquivo.
+                    </small>
+                    @error('arquivos.*')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

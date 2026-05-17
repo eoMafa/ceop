@@ -148,6 +148,7 @@ Route::middleware('auth')->group(function () {
         'destroy' => 'permission:financeiro.deletar',
     ]);
     Route::get('orcamentos/{orcamento}', [OrcamentoController::class, 'show'])->name('orcamentos.show')->middleware('permission:financeiro.ver');
+    Route::delete('orcamentos/arquivos/{arquivo}', [OrcamentoController::class, 'destroyArquivo'])->name('orcamentos.arquivos.destroy')->middleware('permission:financeiro.deletar');
 
     //Evoluções
     Route::get('evolucoes/orcamentos-por-paciente', [EvolucaoController::class, 'orcamentosPorPaciente'])->name('evolucoes.orcamentos-por-paciente');

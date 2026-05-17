@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Agendamento;
 use App\Models\Convenio;
 use App\Models\Orcamento;
+use App\Models\OrcamentoArquivo;
 use App\Models\OrcamentoItem;
 use App\Models\Paciente;
 use App\Models\Procedimento;
 use App\Models\User;
+use App\Rules\ArquivoSeguro;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class OrcamentoController extends Controller
 {
@@ -42,6 +45,7 @@ class OrcamentoController extends Controller
             'desconto_tipo'    => 'required|in:nenhum,percentual,valor_fixo,convenio',
             'desconto_valor'   => 'nullable|numeric|min:0',
             'observacoes'      => 'nullable|string',
+            'arquivos.*'       => ['nullable', 'file', 'max:10240', new ArquivoSeguro],
             'itens'            => 'required|array|min:1',
             'itens.*.procedimento_id' => 'required|exists:procedimentos,id',
             'itens.*.dente'    => 'nullable|string|max:10',
@@ -73,6 +77,18 @@ class OrcamentoController extends Controller
         $orcamento->load(['itens', 'convenio']);
         $orcamento->calcularTotais();
 
+        if ($request->hasFile('arquivos')) {
+            foreach ($request->file('arquivos') as $arquivo) {
+                $caminho = $arquivo->store("orcamentos/{$orcamento->id}", 'public');
+                $orcamento->arquivos()->create([
+                    'nome_original' => $arquivo->getClientOriginalName(),
+                    'caminho'       => $caminho,
+                    'tipo_mime'     => $arquivo->getMimeType(),
+                    'tamanho'       => $arquivo->getSize(),
+                ]);
+            }
+        }
+
         // Se vier de um agendamento, vincula e marca como concluído
         if ($request->filled('agendamento_id')) {
             $agendamento = Agendamento::find($request->agendamento_id);
@@ -87,7 +103,7 @@ class OrcamentoController extends Controller
 
     public function show(Orcamento $orcamento)
     {
-        $orcamento->load(['paciente', 'dentista', 'convenio', 'itens.procedimento', 'pagamentos.parcelas']);
+        $orcamento->load(['paciente', 'dentista', 'convenio', 'itens.procedimento', 'pagamentos.parcelas', 'arquivos']);
         return view('orcamentos.show', compact('orcamento'));
     }
 
@@ -117,6 +133,7 @@ class OrcamentoController extends Controller
             'desconto_tipo'           => 'required|in:nenhum,percentual,valor_fixo,convenio',
             'desconto_valor'          => 'nullable|numeric|min:0',
             'observacoes'             => 'nullable|string',
+            'arquivos.*'              => ['nullable', 'file', 'max:10240', new ArquivoSeguro],
             'itens'                   => 'required|array|min:1',
             'itens.*.procedimento_id' => 'required|exists:procedimentos,id',
             'itens.*.dente'           => 'nullable|string|max:10',
@@ -149,6 +166,18 @@ class OrcamentoController extends Controller
         $orcamento->load(['itens', 'convenio']);
         $orcamento->calcularTotais();
 
+        if ($request->hasFile('arquivos')) {
+            foreach ($request->file('arquivos') as $arquivo) {
+                $caminho = $arquivo->store("orcamentos/{$orcamento->id}", 'public');
+                $orcamento->arquivos()->create([
+                    'nome_original' => $arquivo->getClientOriginalName(),
+                    'caminho'       => $caminho,
+                    'tipo_mime'     => $arquivo->getMimeType(),
+                    'tamanho'       => $arquivo->getSize(),
+                ]);
+            }
+        }
+
         return redirect()->route('orcamentos.show', $orcamento->id)
             ->with('success', 'Orçamento atualizado com sucesso!');
     }
@@ -170,5 +199,15 @@ class OrcamentoController extends Controller
         $orcamento->delete();
         return redirect()->route('orcamentos.index')
             ->with('success', 'Orçamento cancelado com sucesso!');
+    }
+
+    public function destroyArquivo(OrcamentoArquivo $arquivo)
+    {
+        Storage::disk('public')->delete($arquivo->caminho);
+        $orcamento_id = $arquivo->orcamento_id;
+        $arquivo->delete();
+
+        return redirect()->route('orcamentos.show', $orcamento_id)
+            ->with('success', 'Arquivo removido com sucesso!');
     }
 }
